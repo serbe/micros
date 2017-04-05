@@ -49,10 +49,15 @@ func initServer(port string, useLog bool) {
 
 	// e.("/login", login)
 
-	// e.GET("/contacts/", contactList)
-	// e.GET("/contacts/:id/", contactEdit)
-	// e.POST("/contact/:id/", contactSave)
-	// e.DELETE("/contact/:id/", contactDelete)
+	r.Route("/contacts", func(r chi.Router) {
+		r.Get("/", listContacts)
+		r.Post("/", createContact)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getContact)
+			r.Put("/", updateContact)
+			r.Delete("/", deleteContact)
+		})
+	})
 
 	r.Route("/companies", func(r chi.Router) {
 		// r.With(paginate).Get("/", listCompanies)
