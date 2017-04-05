@@ -1,0 +1,11 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.renderIndentGuides": true,
+    "standard.enable": true,
+    "eslint.enable": true,
+    "eslint.options": {
+        "rules": {
+            "eqeqeq": [2, "allow-null"]
+        }
+    }
+}

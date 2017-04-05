@@ -1,0 +1,14 @@
+{
+	"base": {
+		"host": "127.0.0.1",
+		"user": "eddsuser",
+		"password": "eddspass",
+		"dbname": "edds",
+		"logsql": false,
+		"logerr": true
+	},
+	"web": {
+		"port": "9090",
+		"log": true
+	}
+}

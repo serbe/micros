@@ -1,0 +1,14 @@
+{
+	"base": {
+		"host": "127.0.0.1",
+		"user": "Pquser",
+		"password": "Pqpassword",
+		"dbname": "eddsdb",
+		"logsql": false,
+		"logerr": false
+	},
+	"web": {
+		"port": "8080",
+		"log": true
+	}
+}
