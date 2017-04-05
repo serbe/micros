@@ -73,19 +73,16 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 func createContact(w http.ResponseWriter, r *http.Request) {
 	contact := contactParseEditForm(w, r)
 	db.CreateContact(contact)
-	return
 }
 
 func updateContact(w http.ResponseWriter, r *http.Request) {
 	contact := contactParseEditForm(w, r)
 	db.UpdateContact(contact)
-	return
 }
 
 func deleteContact(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	db.DeleteContact(id)
-	return
 }
 
 func contactParseEditForm(w http.ResponseWriter, r *http.Request) (contact edc.Contact) {

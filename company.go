@@ -47,19 +47,16 @@ func getCompany(w http.ResponseWriter, r *http.Request) {
 func createCompany(w http.ResponseWriter, r *http.Request) {
 	company := companyParseEditForm(w, r)
 	db.CreateCompany(company)
-	return
 }
 
 func updateCompany(w http.ResponseWriter, r *http.Request) {
 	company := companyParseEditForm(w, r)
 	db.UpdateCompany(company)
-	return
 }
 
 func deleteCompany(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	db.DeleteCompany(id)
-	return
 }
 
 func companyParseEditForm(w http.ResponseWriter, r *http.Request) (company edc.Company) {

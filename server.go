@@ -82,15 +82,15 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	// e.("/scope/list/", scopeList)
-	// e.("/scope/edit/", scopeEdit)
-	// e.("/scope/delete/", scopeDelete)
-	// e.("/scope/save", scopeSave)
-
-	// e.("/education/list/", educationList)
-	// e.("/education/edit/", educationEdit)
-	// e.("/education/delete/", educationDelete)
-	// e.("/education/save", educationSave)
+	r.Route("/educations", func(r chi.Router) {
+		r.Get("/", listEducations)
+		r.Post("/", createEducation)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getEducation)
+			r.Put("/", updateEducation)
+			r.Delete("/", deleteEducation)
+		})
+	})
 
 	// e.("/practice/list/", practiceList)
 	// e.("/practice/edit/", practiceEdit)
