@@ -16,10 +16,10 @@ func listCompanies(w http.ResponseWriter, r *http.Request) {
 	}
 	companyes, err := db.GetCompanyList()
 	if err != nil {
-		log.Println("listCompanies edb.GetCompanyList ", err)
+		log.Println("listCompanies db.GetCompanyList ", err)
 		return
 	}
-	ctx := context{Title: "List", Companies: companyes}
+	ctx := context{Title: "List company", Companies: companyes}
 	render.DefaultResponder(w, r, ctx)
 }
 
@@ -32,35 +32,15 @@ func getCompany(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	company, err := db.GetCompany(id)
 	if err != nil {
-		log.Println("companyEdit edb.GetCompany ", err)
+		log.Println("getCompany db.GetCompany ", err)
 		return
 	}
 	scopesSelect, err := db.GetScopeSelect()
 	if err != nil {
-		log.Println("companyEdit edb.GetScopeSelect ", err)
+		log.Println("getCompany db.GetScopeSelect ", err)
 		return
 	}
-	company.Contacts, err = db.GetContactCompany(company.ID)
-	if err != nil {
-		log.Println("companyEdit edb.GetContactCompany ", err)
-		return
-	}
-	company.Phones, err = db.GetCompanyPhones(company.ID, false)
-	if err != nil {
-		log.Println("contactEdit edb.GetCompanyPhones false ", err)
-		return
-	}
-	company.Faxes, err = db.GetCompanyPhones(company.ID, true)
-	if err != nil {
-		log.Println("contactEdit edb.GetCompanyPhones true ", err)
-		return
-	}
-	company.Emails, err = db.GetCompanyEmails(company.ID)
-	if err != nil {
-		log.Println("contactEdit edb.GetCompanyEmails ", err)
-		return
-	}
-	ctx := context{Title: "Create company", Company: company, Scopes: scopesSelect}
+	ctx := context{Title: "Get company", Company: company, Scopes: scopesSelect}
 	render.DefaultResponder(w, r, ctx)
 }
 

@@ -59,7 +59,6 @@ func initServer(port string, useLog bool) {
 		r.Get("/", listCompanies)
 		r.Post("/", createCompany)
 		// r.Get("/search", SearchArticles)
-
 		r.Route("/:id", func(r chi.Router) {
 			// r.Use(ArticleCtx)
 			r.Get("/", getCompany)
@@ -67,9 +66,16 @@ func initServer(port string, useLog bool) {
 			r.Delete("/", deleteCompany)
 		})
 	})
-	// e.GET("/companies/:id", companyEdit)
-	// e.POST("/companies/:id", companySave)
-	// e.DELETE("/companies/:id", companyDelete)
+
+	r.Route("/scopes", func(r chi.Router) {
+		r.Get("/", listScopes)
+		r.Post("/", createScope)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getScope)
+			r.Put("/", updateScope)
+			r.Delete("/", deleteScope)
+		})
+	})
 
 	// e.("/scope/list/", scopeList)
 	// e.("/scope/edit/", scopeEdit)
