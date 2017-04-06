@@ -11,8 +11,8 @@ import (
 
 func listCompanies(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title     string
-		Companies []edc.CompanyList
+		Title     string            `json:"title"`
+		Companies []edc.CompanyList `json:"companies"`
 	}
 	companyes, err := db.GetCompanyList()
 	if err != nil {
