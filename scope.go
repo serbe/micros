@@ -15,7 +15,7 @@ func listScopes(w http.ResponseWriter, r *http.Request) {
 		Title  string      `json:"title"`
 		Scopes []edc.Scope `json:"scopes"`
 	}
-	scopes, err := db.GetScopeList()
+	scopes, err := db.GetScopeListAll()
 	if err != nil {
 		log.Println("scopeList edb.GetScopeList ", err)
 		return

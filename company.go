@@ -33,15 +33,15 @@ func getCompany(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	company, err := db.GetCompany(id)
 	if err != nil {
-		log.Println("getCompany db.GetCompany ", err)
+		log.Println("getCompany db.GetCompany", err)
 		return
 	}
-	scopesSelect, err := db.GetScopeSelect()
+	scopes, err := db.GetScopeSelectAll()
 	if err != nil {
-		log.Println("getCompany db.GetScopeSelect ", err)
+		log.Println("getCompany GetScopeSelectAll", err)
 		return
 	}
-	ctx := context{Title: "Get company", Company: company, Scopes: scopesSelect}
+	ctx := context{Title: "Get company", Company: company, Scopes: scopes}
 	render.DefaultResponder(w, r, ctx)
 }
 

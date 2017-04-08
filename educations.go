@@ -54,7 +54,8 @@ func deleteEducation(w http.ResponseWriter, r *http.Request) {
 	db.DeleteEducation(id)
 }
 
-func educationParseEditForm(w http.ResponseWriter, r *http.Request) (education edc.Education) {
+func educationParseEditForm(w http.ResponseWriter, r *http.Request) edc.Education {
+	var education edc.Education
 	r.ParseForm()
 	if id, err := strconv.ParseInt(r.FormValue("education-id"), 10, 64); err == nil {
 		education.ID = id
@@ -64,5 +65,5 @@ func educationParseEditForm(w http.ResponseWriter, r *http.Request) (education e
 	education.StartDate = r.FormValue("education-start-date")
 	education.EndDate = r.FormValue("education-end-date")
 	education.Note = r.FormValue("education-note")
-	return
+	return education
 }

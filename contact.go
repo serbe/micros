@@ -40,27 +40,27 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 		log.Println("getContact GetContact ", err)
 		return
 	}
-	companies, err := db.GetCompanySelect()
+	companies, err := db.GetCompanySelectAll()
 	if err != nil {
 		log.Println("getContact GetCompanySelect ", err)
 		return
 	}
-	departments, err := db.GetDepartmentSelect()
+	departments, err := db.GetDepartmentSelectAll()
 	if err != nil {
 		log.Println("getContact GetDepartmentSelect ", err)
 		return
 	}
-	posts, err := db.GetPostSelect(false)
+	posts, err := db.GetPostSelectAll(false)
 	if err != nil {
 		log.Println("getContact GetPostSelect(false) ", err)
 		return
 	}
-	postsgo, err := db.GetPostSelect(true)
+	postsgo, err := db.GetPostSelectAll(true)
 	if err != nil {
 		log.Println("getContact GetPostSelect(true) ", err)
 		return
 	}
-	ranks, err := db.GetRankSelect()
+	ranks, err := db.GetRankSelectAll()
 	if err != nil {
 		log.Println("getContact GetRankSelect ", err)
 		return
