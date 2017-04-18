@@ -42,27 +42,27 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 	}
 	companies, err := db.GetCompanySelectAll()
 	if err != nil {
-		log.Println("getContact GetCompanySelect ", err)
+		log.Println("getContact GetCompanySelectAll ", err)
 		return
 	}
 	departments, err := db.GetDepartmentSelectAll()
 	if err != nil {
-		log.Println("getContact GetDepartmentSelect ", err)
+		log.Println("getContact GetDepartmentSelectAll ", err)
 		return
 	}
 	posts, err := db.GetPostSelectAll(false)
 	if err != nil {
-		log.Println("getContact GetPostSelect(false) ", err)
+		log.Println("getContact GetPostSelectAll(false) ", err)
 		return
 	}
 	postsgo, err := db.GetPostSelectAll(true)
 	if err != nil {
-		log.Println("getContact GetPostSelect(true) ", err)
+		log.Println("getContact GetPostSelectAll(true) ", err)
 		return
 	}
 	ranks, err := db.GetRankSelectAll()
 	if err != nil {
-		log.Println("getContact GetRankSelect ", err)
+		log.Println("getContact GetRankSelectAll ", err)
 		return
 	}
 	ctx := context{Title: "Create contact", Contact: contact, Companies: companies, Departments: departments, Posts: posts, PostsGO: postsgo, Ranks: ranks}

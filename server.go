@@ -65,7 +65,6 @@ func initServer(port string, useLog bool) {
 		r.Post("/", createCompany)
 		// r.Get("/search", SearchArticles)
 		r.Route("/:id", func(r chi.Router) {
-			// r.Use(ArticleCtx)
 			r.Get("/", getCompany)
 			r.Put("/", updateCompany)
 			r.Delete("/", deleteCompany)
