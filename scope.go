@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/render"
@@ -12,8 +12,8 @@ import (
 
 func listScopes(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title  string      `json:"title"`
-		Scopes []edc.Scope `json:"scopes"`
+		Title  string          `json:"title"`
+		Scopes []edc.ScopeList `json:"scopes"`
 	}
 	scopes, err := db.GetScopeListAll()
 	if err != nil {
@@ -40,13 +40,19 @@ func getScope(w http.ResponseWriter, r *http.Request) {
 }
 
 func createScope(w http.ResponseWriter, r *http.Request) {
-	scope := scopeParseEditForm(w, r)
+	decoder := json.NewDecoder(r.Body)
+	var scope edc.Scope
+	_ = decoder.Decode(&scope)
+	defer r.Body.Close()
 	db.CreateScope(scope)
 	return
 }
 
 func updateScope(w http.ResponseWriter, r *http.Request) {
-	scope := scopeParseEditForm(w, r)
+	decoder := json.NewDecoder(r.Body)
+	var scope edc.Scope
+	_ = decoder.Decode(&scope)
+	defer r.Body.Close()
 	db.UpdateScope(scope)
 	return
 }
@@ -54,17 +60,5 @@ func updateScope(w http.ResponseWriter, r *http.Request) {
 func deleteScope(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	db.DeleteScope(id)
-	return
-}
-
-func scopeParseEditForm(w http.ResponseWriter, r *http.Request) (scope edc.Scope) {
-	r.ParseForm()
-	if id, err := strconv.ParseInt(r.FormValue("scope-id"), 10, 64); err == nil {
-		scope.ID = id
-	} else {
-		scope.ID = 0
-	}
-	scope.Name = r.FormValue("scope-name")
-	scope.Note = r.FormValue("scope-note")
 	return
 }

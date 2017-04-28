@@ -91,33 +91,57 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	// e.("/practice/list/", practiceList)
-	// e.("/practice/edit/", practiceEdit)
-	// e.("/practice/delete/", practiceDelete)
-	// e.("/practice/save", practiceSave)
+	r.Route("/practices", func(r chi.Router) {
+		r.Get("/", listPractices)
+		r.Post("/", createPractice)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getPractice)
+			r.Put("/", updatePractice)
+			r.Delete("/", deletePractice)
+		})
+	})
 
-	// e.("/kind/list/", kindList)
-	// e.("/kind/edit/", kindEdit)
-	// e.("/kind/delete/", kindDelete)
-	// e.("/kind/save", kindSave)
+	r.Route("/kinds", func(r chi.Router) {
+		r.Get("/", listKinds)
+		r.Post("/", createKind)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getKind)
+			r.Put("/", updateKind)
+			r.Delete("/", deleteKind)
+		})
+	})
 
-	// e.("/post/list/", postList)
-	// e.("/post/edit/", postEdit)
-	// e.("/post/delete/", postDelete)
-	// e.("/post/save", postSave)
+	r.Route("/posts", func(r chi.Router) {
+		r.Get("/", listPosts)
+		r.Post("/", createPost)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getPost)
+			r.Put("/", updatePost)
+			r.Delete("/", deletePost)
+		})
+	})
 
-	// e.("/rank/list/", rankList)
-	// e.("/rank/edit/", rankEdit)
-	// e.("/rank/delete/", rankDelete)
-	// e.("/rank/save", rankSave)
+	r.Route("/ranks", func(r chi.Router) {
+		r.Get("/", listRanks)
+		r.Post("/", createRank)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getRank)
+			r.Put("/", updateRank)
+			r.Delete("/", deleteRank)
+		})
+	})
 
-	// e.("/department/list/", departmentList)
-	// e.("/department/edit/", departmentEdit)
-	// e.("/department/delete/", departmentDelete)
-	// e.("/department/save", departmentSave)
+	r.Route("/departments", func(r chi.Router) {
+		r.Get("/", listDepartments)
+		r.Post("/", createDepartment)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getDepartment)
+			r.Put("/", updateDepartment)
+			r.Delete("/", deleteDepartment)
+		})
+	})
 
 	// e.("/about", about)
-
 	// e.File("/favicon.ico", "public/favicon.ico")
 	// e.Static("/public", "public")
 

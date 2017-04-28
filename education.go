@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/render"
@@ -12,10 +12,10 @@ import (
 
 func listEducations(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title      string          `json:"title"`
-		Educations []edc.Education `json:"educations"`
+		Title      string              `json:"title"`
+		Educations []edc.EducationList `json:"educations"`
 	}
-	educations, err := db.GetEducationList()
+	educations, err := db.GetEducationListAll()
 	if err != nil {
 		log.Println("educationList GetEducationList ", err)
 		return
@@ -40,30 +40,22 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 }
 
 func createEducation(w http.ResponseWriter, r *http.Request) {
-	education := educationParseEditForm(w, r)
+	decoder := json.NewDecoder(r.Body)
+	var education edc.Education
+	_ = decoder.Decode(&education)
+	defer r.Body.Close()
 	db.CreateEducation(education)
 }
 
 func updateEducation(w http.ResponseWriter, r *http.Request) {
-	education := educationParseEditForm(w, r)
+	decoder := json.NewDecoder(r.Body)
+	var education edc.Education
+	_ = decoder.Decode(&education)
+	defer r.Body.Close()
 	db.UpdateEducation(education)
 }
 
 func deleteEducation(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	db.DeleteEducation(id)
-}
-
-func educationParseEditForm(w http.ResponseWriter, r *http.Request) edc.Education {
-	var education edc.Education
-	r.ParseForm()
-	if id, err := strconv.ParseInt(r.FormValue("education-id"), 10, 64); err == nil {
-		education.ID = id
-	} else {
-		education.ID = 0
-	}
-	education.StartDate = r.FormValue("education-start-date")
-	education.EndDate = r.FormValue("education-end-date")
-	education.Note = r.FormValue("education-note")
-	return education
 }
