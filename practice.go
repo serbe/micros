@@ -26,16 +26,28 @@ func listPractices(w http.ResponseWriter, r *http.Request) {
 
 func getPractice(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title    string       `json:"title"`
-		Practice edc.Practice `json:"practice"`
+		Title     string           `json:"title"`
+		Practice  edc.Practice     `json:"practice"`
+		Companies []edc.SelectItem `json:"companies"`
+		Kinds     []edc.SelectItem `json:"kinds"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	practice, err := db.GetPractice(id)
 	if err != nil {
-		log.Println("practiceEdit db.GetPractice ", err)
+		log.Println("getPractice GetPractice ", err)
 		return
 	}
-	ctx := context{Title: "Create practice", Practice: practice}
+	companies, err := db.GetCompanySelectAll()
+	if err != nil {
+		log.Println("getPractice GetCompanySelectAll ", err)
+		return
+	}
+	kinds, err := db.GetKindSelectAll()
+	if err != nil {
+		log.Println("getPractice GetKindSelectAll ", err)
+		return
+	}
+	ctx := context{Title: "Create practice", Practice: practice, Companies: companies, Kinds: kinds}
 	render.DefaultResponder(w, r, ctx)
 }
 
