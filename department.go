@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listDepartments(w http.ResponseWriter, r *http.Request) {
+func listDepartments(c echo.Context) error {
 	type context struct {
 		Title       string               `json:"title"`
 		Departments []edc.DepartmentList `json:"departments"`
@@ -18,47 +16,47 @@ func listDepartments(w http.ResponseWriter, r *http.Request) {
 	departments, err := db.GetDepartmentListAll()
 	if err != nil {
 		log.Println("departmentList edb.GetDepartmentList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Departments: departments}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getDepartment(w http.ResponseWriter, r *http.Request) {
+func getDepartment(c echo.Context) error {
 	type context struct {
 		Title      string         `json:"title"`
 		Department edc.Department `json:"department"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	department, err := db.GetDepartment(id)
 	if err != nil {
 		log.Println("getDepartment edb.GetDepartment ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create department", Department: department}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createDepartment(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createDepartment(c echo.Context) error {
 	var department edc.Department
-	_ = decoder.Decode(&department)
-	defer r.Body.Close()
-	db.CreateDepartment(department)
-	return
+	err := c.Bind(&department)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreateDepartment(department)
+	return err
 }
 
-func updateDepartment(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updateDepartment(c echo.Context) error {
 	var department edc.Department
-	_ = decoder.Decode(&department)
-	defer r.Body.Close()
-	db.UpdateDepartment(department)
-	return
+	err := c.Bind(&department)
+	if err != nil {
+		return err
+	}
+	return db.UpdateDepartment(department)
 }
 
-func deleteDepartment(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeleteDepartment(id)
-	return
+func deleteDepartment(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeleteDepartment(id)
 }

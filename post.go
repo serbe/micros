@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listPosts(w http.ResponseWriter, r *http.Request) {
+func listPosts(c echo.Context) error {
 	type context struct {
 		Title string         `json:"title"`
 		Posts []edc.PostList `json:"posts"`
@@ -18,47 +16,47 @@ func listPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := db.GetPostListAll()
 	if err != nil {
 		log.Println("postList edb.GetPostList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Posts: posts}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getPost(w http.ResponseWriter, r *http.Request) {
+func getPost(c echo.Context) error {
 	type context struct {
 		Title string   `json:"title"`
 		Post  edc.Post `json:"post"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	post, err := db.GetPost(id)
 	if err != nil {
 		log.Println("getPost edb.GetPost ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create post", Post: post}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createPost(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createPost(c echo.Context) error {
 	var post edc.Post
-	_ = decoder.Decode(&post)
-	defer r.Body.Close()
-	db.CreatePost(post)
-	return
+	err := c.Bind(&post)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreatePost(post)
+	return err
 }
 
-func updatePost(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updatePost(c echo.Context) error {
 	var post edc.Post
-	_ = decoder.Decode(&post)
-	defer r.Body.Close()
-	db.UpdatePost(post)
-	return
+	err := c.Bind(&post)
+	if err != nil {
+		return err
+	}
+	return db.UpdatePost(post)
 }
 
-func deletePost(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeletePost(id)
-	return
+func deletePost(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeletePost(id)
 }

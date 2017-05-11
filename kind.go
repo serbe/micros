@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listKinds(w http.ResponseWriter, r *http.Request) {
+func listKinds(c echo.Context) error {
 	type context struct {
 		Title string         `json:"title"`
 		Kinds []edc.KindList `json:"kinds"`
@@ -18,47 +16,47 @@ func listKinds(w http.ResponseWriter, r *http.Request) {
 	kinds, err := db.GetKindListAll()
 	if err != nil {
 		log.Println("kindList edb.GetKindList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Kinds: kinds}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getKind(w http.ResponseWriter, r *http.Request) {
+func getKind(c echo.Context) error {
 	type context struct {
 		Title string   `json:"title"`
 		Kind  edc.Kind `json:"kind"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	kind, err := db.GetKind(id)
 	if err != nil {
 		log.Println("getKind edb.GetKind ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create kind", Kind: kind}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createKind(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createKind(c echo.Context) error {
 	var kind edc.Kind
-	_ = decoder.Decode(&kind)
-	defer r.Body.Close()
-	db.CreateKind(kind)
-	return
+	err := c.Bind(&kind)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreateKind(kind)
+	return err
 }
 
-func updateKind(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updateKind(c echo.Context) error {
 	var kind edc.Kind
-	_ = decoder.Decode(&kind)
-	defer r.Body.Close()
-	db.UpdateKind(kind)
-	return
+	err := c.Bind(&kind)
+	if err != nil {
+		return err
+	}
+	return db.UpdateKind(kind)
 }
 
-func deleteKind(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeleteKind(id)
-	return
+func deleteKind(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeleteKind(id)
 }

@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listRanks(w http.ResponseWriter, r *http.Request) {
+func listRanks(c echo.Context) error {
 	type context struct {
 		Title string         `json:"title"`
 		Ranks []edc.RankList `json:"ranks"`
@@ -18,47 +16,47 @@ func listRanks(w http.ResponseWriter, r *http.Request) {
 	ranks, err := db.GetRankListAll()
 	if err != nil {
 		log.Println("rankList edb.GetRankList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Ranks: ranks}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getRank(w http.ResponseWriter, r *http.Request) {
+func getRank(c echo.Context) error {
 	type context struct {
 		Title string   `json:"title"`
 		Rank  edc.Rank `json:"rank"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	rank, err := db.GetRank(id)
 	if err != nil {
 		log.Println("getRank edb.GetRank ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create rank", Rank: rank}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createRank(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createRank(c echo.Context) error {
 	var rank edc.Rank
-	_ = decoder.Decode(&rank)
-	defer r.Body.Close()
-	db.CreateRank(rank)
-	return
+	err := c.Bind(&rank)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreateRank(rank)
+	return err
 }
 
-func updateRank(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updateRank(c echo.Context) error {
 	var rank edc.Rank
-	_ = decoder.Decode(&rank)
-	defer r.Body.Close()
-	db.UpdateRank(rank)
-	return
+	err := c.Bind(&rank)
+	if err != nil {
+		return err
+	}
+	return db.UpdateRank(rank)
 }
 
-func deleteRank(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeleteRank(id)
-	return
+func deleteRank(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeleteRank(id)
 }

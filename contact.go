@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listContacts(w http.ResponseWriter, r *http.Request) {
+func listContacts(c echo.Context) error {
 	type context struct {
 		Title    string            `json:"title"`
 		Contacts []edc.ContactList `json:"contacts"`
@@ -18,13 +16,13 @@ func listContacts(w http.ResponseWriter, r *http.Request) {
 	contacts, err := db.GetContactList()
 	if err != nil {
 		log.Println("listContacts GetContactList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Contacts: contacts}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getContact(w http.ResponseWriter, r *http.Request) {
+func getContact(c echo.Context) error {
 	type context struct {
 		Title       string           `json:"title"`
 		Contact     edc.Contact      `json:"contact"`
@@ -34,58 +32,61 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 		PostsGO     []edc.SelectItem `json:"posts_go"`
 		Ranks       []edc.SelectItem `json:"ranks"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	contact, err := db.GetContact(id)
 	if err != nil {
 		log.Println("getContact GetContact ", err)
-		return
+		return err
 	}
 	companies, err := db.GetCompanySelectAll()
 	if err != nil {
 		log.Println("getContact GetCompanySelectAll ", err)
-		return
+		return err
 	}
 	departments, err := db.GetDepartmentSelectAll()
 	if err != nil {
 		log.Println("getContact GetDepartmentSelectAll ", err)
-		return
+		return err
 	}
 	posts, err := db.GetPostSelectAll(false)
 	if err != nil {
 		log.Println("getContact GetPostSelectAll(false) ", err)
-		return
+		return err
 	}
 	postsgo, err := db.GetPostSelectAll(true)
 	if err != nil {
 		log.Println("getContact GetPostSelectAll(true) ", err)
-		return
+		return err
 	}
 	ranks, err := db.GetRankSelectAll()
 	if err != nil {
 		log.Println("getContact GetRankSelectAll ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create contact", Contact: contact, Companies: companies, Departments: departments, Posts: posts, PostsGO: postsgo, Ranks: ranks}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createContact(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createContact(c echo.Context) error {
 	var contact edc.Contact
-	_ = decoder.Decode(&contact)
-	defer r.Body.Close()
-	db.CreateContact(contact)
+	err := c.Bind(&contact)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreateContact(contact)
+	return err
 }
 
-func updateContact(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updateContact(c echo.Context) error {
 	var contact edc.Contact
-	_ = decoder.Decode(&contact)
-	defer r.Body.Close()
-	db.UpdateContact(contact)
+	err := c.Bind(&contact)
+	if err != nil {
+		return err
+	}
+	return db.UpdateContact(contact)
 }
 
-func deleteContact(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeleteContact(id)
+func deleteContact(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeleteContact(id)
 }

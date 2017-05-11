@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
 	"github.com/serbe/edc"
 )
 
-func listPractices(w http.ResponseWriter, r *http.Request) {
+func listPractices(c echo.Context) error {
 	type context struct {
 		Title     string             `json:"title"`
 		Practices []edc.PracticeList `json:"practices"`
@@ -18,56 +16,59 @@ func listPractices(w http.ResponseWriter, r *http.Request) {
 	practices, err := db.GetPracticeListAll()
 	if err != nil {
 		log.Println("practiceList GetPracticeList ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "List", Practices: practices}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func getPractice(w http.ResponseWriter, r *http.Request) {
+func getPractice(c echo.Context) error {
 	type context struct {
 		Title     string           `json:"title"`
 		Practice  edc.Practice     `json:"practice"`
 		Companies []edc.SelectItem `json:"companies"`
 		Kinds     []edc.SelectItem `json:"kinds"`
 	}
-	id := toInt(chi.URLParam(r, "id"))
+	id := toInt(c.Param("id"))
 	practice, err := db.GetPractice(id)
 	if err != nil {
 		log.Println("getPractice GetPractice ", err)
-		return
+		return err
 	}
 	companies, err := db.GetCompanySelectAll()
 	if err != nil {
 		log.Println("getPractice GetCompanySelectAll ", err)
-		return
+		return err
 	}
 	kinds, err := db.GetKindSelectAll()
 	if err != nil {
 		log.Println("getPractice GetKindSelectAll ", err)
-		return
+		return err
 	}
 	ctx := context{Title: "Create practice", Practice: practice, Companies: companies, Kinds: kinds}
-	render.DefaultResponder(w, r, ctx)
+	return c.JSON(http.StatusOK, ctx)
 }
 
-func createPractice(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func createPractice(c echo.Context) error {
 	var practice edc.Practice
-	_ = decoder.Decode(&practice)
-	defer r.Body.Close()
-	db.CreatePractice(practice)
+	err := c.Bind(&practice)
+	if err != nil {
+		return err
+	}
+	_, err = db.CreatePractice(practice)
+	return err
 }
 
-func updatePractice(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func updatePractice(c echo.Context) error {
 	var practice edc.Practice
-	_ = decoder.Decode(&practice)
-	defer r.Body.Close()
-	db.UpdatePractice(practice)
+	err := c.Bind(&practice)
+	if err != nil {
+		return err
+	}
+	return db.UpdatePractice(practice)
 }
 
-func deletePractice(w http.ResponseWriter, r *http.Request) {
-	id := toInt(chi.URLParam(r, "id"))
-	db.DeletePractice(id)
+func deletePractice(c echo.Context) error {
+	id := toInt(c.Param("id"))
+	return db.DeletePractice(id)
 }

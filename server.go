@@ -1,149 +1,101 @@
 package main
 
 import (
-	"time"
-
-	"net/http"
-
-	"github.com/goware/cors"
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/middleware"
-	"github.com/pressly/chi/render"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func initServer(port string, useLog bool) {
-	r := chi.NewRouter()
+	e := echo.New()
+
+	e.Use(middleware.Recover())
 
 	if useLog {
-		r.Use(middleware.Logger)
+		e.Use(middleware.Logger())
 	}
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Recoverer)
-	// r.Use(middleware.Compress())
-	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Use(render.SetContentType(render.ContentTypeJSON))
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8080", "https://127.0.0.1:8080", "http://localhost"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 
-	cors := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080"}, // Use this to allow specific origin hosts
-		// AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	})
-	r.Use(cors.Handler)
+	// e.GET("/", func(c echo.Context) error {
+	// 	w.Write([]byte("root."))
+	// })
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("root."))
-	})
+	// e.GET("/ping", func(c echo.Context) error {
+	// 	w.Write([]byte("pong"))
+	// })
 
-	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong"))
-	})
-
-	r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
-		panic("test")
-	})
+	// e.GET("/panic", func(c echo.Context) error {
+	// 	panic("test")
+	// })
 
 	// e.("/login", login)
 
-	r.Route("/contacts", func(r chi.Router) {
-		r.Get("/", listContacts)
-		r.Post("/", createContact)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getContact)
-			r.Put("/", updateContact)
-			r.Delete("/", deleteContact)
-		})
-	})
+	e.GET("/contacts", listContacts)
+	e.POST("/contacts", createContact)
+	e.GET("/contacts/:id", getContact)
+	e.PUT("/contacts/:id", updateContact)
+	e.DELETE("/contacts/:id", deleteContact)
 
-	r.Route("/companies", func(r chi.Router) {
-		// r.With(paginate).Get("/", listCompanies)
-		r.Get("/", listCompanies)
-		r.Post("/", createCompany)
-		// r.Get("/search", SearchArticles)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getCompany)
-			r.Put("/", updateCompany)
-			r.Delete("/", deleteCompany)
-		})
-	})
+	// e.With(paginate).GET("/", listCompanies)
+	e.GET("/companies", listCompanies)
+	e.POST("/companies", createCompany)
+	// e.GET("/search", SearchArticles)
+	e.GET("/companies/:id", getCompany)
+	e.PUT("/companies/:id", updateCompany)
+	e.DELETE("/companies/:id", deleteCompany)
 
-	r.Route("/scopes", func(r chi.Router) {
-		r.Get("/", listScopes)
-		r.Post("/", createScope)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getScope)
-			r.Put("/", updateScope)
-			r.Delete("/", deleteScope)
-		})
-	})
+	e.GET("/scopes", listScopes)
+	e.POST("/scopes", createScope)
+	e.GET("/scopes/:id", getScope)
+	e.PUT("/scopes/:id", updateScope)
+	e.DELETE("/scopes/:id", deleteScope)
 
-	r.Route("/educations", func(r chi.Router) {
-		r.Get("/", listEducations)
-		r.Post("/", createEducation)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getEducation)
-			r.Put("/", updateEducation)
-			r.Delete("/", deleteEducation)
-		})
-	})
+	e.GET("/educations", listEducations)
+	e.POST("/educations", createEducation)
+	e.GET("/educations/:id", getEducation)
+	e.PUT("/educations/:id", updateEducation)
+	e.DELETE("/educations/:id", deleteEducation)
 
-	r.Route("/practices", func(r chi.Router) {
-		r.Get("/", listPractices)
-		r.Post("/", createPractice)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getPractice)
-			r.Put("/", updatePractice)
-			r.Delete("/", deletePractice)
-		})
-	})
+	e.GET("/practices", listPractices)
+	e.POST("/practices", createPractice)
+	e.GET("/practices/:id", getPractice)
+	e.PUT("/practices/:id", updatePractice)
+	e.DELETE("/practices/:id", deletePractice)
 
-	r.Route("/kinds", func(r chi.Router) {
-		r.Get("/", listKinds)
-		r.Post("/", createKind)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getKind)
-			r.Put("/", updateKind)
-			r.Delete("/", deleteKind)
-		})
-	})
+	e.GET("/kinds", listKinds)
+	e.POST("/kinds", createKind)
+	e.GET("/kinds/:id", getKind)
+	e.PUT("/kinds/:id", updateKind)
+	e.DELETE("/kinds/:id", deleteKind)
 
-	r.Route("/posts", func(r chi.Router) {
-		r.Get("/", listPosts)
-		r.Post("/", createPost)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getPost)
-			r.Put("/", updatePost)
-			r.Delete("/", deletePost)
-		})
-	})
+	e.GET("/posts", listPosts)
+	e.POST("/posts", createPost)
+	e.GET("/posts/:id", getPost)
+	e.PUT("/posts/:id", updatePost)
+	e.DELETE("/posts/:id", deletePost)
 
-	r.Route("/ranks", func(r chi.Router) {
-		r.Get("/", listRanks)
-		r.Post("/", createRank)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getRank)
-			r.Put("/", updateRank)
-			r.Delete("/", deleteRank)
-		})
-	})
+	e.GET("/ranks", listRanks)
+	e.POST("/ranks", createRank)
+	e.GET("/ranks/:id", getRank)
+	e.PUT("/ranks/:id", updateRank)
+	e.DELETE("/ranks/:id", deleteRank)
 
-	r.Route("/departments", func(r chi.Router) {
-		r.Get("/", listDepartments)
-		r.Post("/", createDepartment)
-		r.Route("/:id", func(r chi.Router) {
-			r.Get("/", getDepartment)
-			r.Put("/", updateDepartment)
-			r.Delete("/", deleteDepartment)
-		})
-	})
+	e.GET("/departments", listDepartments)
+	e.POST("/departments", createDepartment)
+	e.GET("/departments/:id", getDepartment)
+	e.PUT("/departments/:id", updateDepartment)
+	e.DELETE("/departments/:id", deleteDepartment)
 
 	// e.("/about", about)
 	// e.File("/favicon.ico", "public/favicon.ico")
 	// e.Static("/public", "public")
 
-	http.ListenAndServe(":"+port, r)
+	// if (useLog) {
+	e.Logger.Fatal(e.Start(":" + port))
+	// } else {
+	// e.Start(":"+port)
+	// }
 }
