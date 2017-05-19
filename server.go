@@ -31,7 +31,7 @@ func initServer(port string, useLog bool) {
 	// 	panic("test")
 	// })
 
-	// e.("/login", login)
+	e.POST("/auth/login", login)
 
 	e.GET("/contacts", listContacts)
 	e.POST("/contacts", createContact)
