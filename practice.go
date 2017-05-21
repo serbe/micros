@@ -9,26 +9,18 @@ import (
 )
 
 func listPractices(c echo.Context) error {
-	type context struct {
-		Title     string             `json:"title"`
-		Practices []edc.PracticeList `json:"practices"`
-	}
 	practices, err := db.GetPracticeListAll()
 	if err != nil {
 		log.Println("practiceList GetPracticeList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Practices: practices}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":     "List",
+		"practices": practices,
+	})
 }
 
 func getPractice(c echo.Context) error {
-	type context struct {
-		Title     string           `json:"title"`
-		Practice  edc.Practice     `json:"practice"`
-		Companies []edc.SelectItem `json:"companies"`
-		Kinds     []edc.SelectItem `json:"kinds"`
-	}
 	id := toInt(c.Param("id"))
 	practice, err := db.GetPractice(id)
 	if err != nil {
@@ -45,8 +37,12 @@ func getPractice(c echo.Context) error {
 		log.Println("getPractice GetKindSelectAll ", err)
 		return err
 	}
-	ctx := context{Title: "Create practice", Practice: practice, Companies: companies, Kinds: kinds}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":     "Create practice",
+		"practice":  practice,
+		"companies": companies,
+		"kinds":     kinds,
+	})
 }
 
 func createPractice(c echo.Context) error {

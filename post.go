@@ -9,32 +9,28 @@ import (
 )
 
 func listPosts(c echo.Context) error {
-	type context struct {
-		Title string         `json:"title"`
-		Posts []edc.PostList `json:"posts"`
-	}
 	posts, err := db.GetPostListAll()
 	if err != nil {
 		log.Println("postList edb.GetPostList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Posts: posts}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "List",
+		"posts": posts,
+	})
 }
 
 func getPost(c echo.Context) error {
-	type context struct {
-		Title string   `json:"title"`
-		Post  edc.Post `json:"post"`
-	}
 	id := toInt(c.Param("id"))
 	post, err := db.GetPost(id)
 	if err != nil {
 		log.Println("getPost edb.GetPost ", err)
 		return err
 	}
-	ctx := context{Title: "Create post", Post: post}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "Create post",
+		"post":  post,
+	})
 }
 
 func createPost(c echo.Context) error {

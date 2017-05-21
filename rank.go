@@ -9,32 +9,28 @@ import (
 )
 
 func listRanks(c echo.Context) error {
-	type context struct {
-		Title string         `json:"title"`
-		Ranks []edc.RankList `json:"ranks"`
-	}
 	ranks, err := db.GetRankListAll()
 	if err != nil {
 		log.Println("rankList edb.GetRankList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Ranks: ranks}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "List",
+		"ranks": ranks,
+	})
 }
 
 func getRank(c echo.Context) error {
-	type context struct {
-		Title string   `json:"title"`
-		Rank  edc.Rank `json:"rank"`
-	}
 	id := toInt(c.Param("id"))
 	rank, err := db.GetRank(id)
 	if err != nil {
 		log.Println("getRank edb.GetRank ", err)
 		return err
 	}
-	ctx := context{Title: "Create rank", Rank: rank}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "Create rank",
+		"rank":  rank,
+	})
 }
 
 func createRank(c echo.Context) error {

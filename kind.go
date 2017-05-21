@@ -9,32 +9,28 @@ import (
 )
 
 func listKinds(c echo.Context) error {
-	type context struct {
-		Title string         `json:"title"`
-		Kinds []edc.KindList `json:"kinds"`
-	}
 	kinds, err := db.GetKindListAll()
 	if err != nil {
 		log.Println("kindList edb.GetKindList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Kinds: kinds}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "List",
+		"kinds": kinds,
+	})
 }
 
 func getKind(c echo.Context) error {
-	type context struct {
-		Title string   `json:"title"`
-		Kind  edc.Kind `json:"kind"`
-	}
 	id := toInt(c.Param("id"))
 	kind, err := db.GetKind(id)
 	if err != nil {
 		log.Println("getKind edb.GetKind ", err)
 		return err
 	}
-	ctx := context{Title: "Create kind", Kind: kind}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "Create kind",
+		"kind":  kind,
+	})
 }
 
 func createKind(c echo.Context) error {

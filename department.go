@@ -9,32 +9,28 @@ import (
 )
 
 func listDepartments(c echo.Context) error {
-	type context struct {
-		Title       string               `json:"title"`
-		Departments []edc.DepartmentList `json:"departments"`
-	}
 	departments, err := db.GetDepartmentListAll()
 	if err != nil {
 		log.Println("departmentList edb.GetDepartmentList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Departments: departments}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":       "List",
+		"departments": departments,
+	})
 }
 
 func getDepartment(c echo.Context) error {
-	type context struct {
-		Title      string         `json:"title"`
-		Department edc.Department `json:"department"`
-	}
 	id := toInt(c.Param("id"))
 	department, err := db.GetDepartment(id)
 	if err != nil {
 		log.Println("getDepartment edb.GetDepartment ", err)
 		return err
 	}
-	ctx := context{Title: "Create department", Department: department}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":      "Create department",
+		"department": department,
+	})
 }
 
 func createDepartment(c echo.Context) error {

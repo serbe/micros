@@ -9,32 +9,28 @@ import (
 )
 
 func listScopes(c echo.Context) error {
-	type context struct {
-		Title  string          `json:"title"`
-		Scopes []edc.ScopeList `json:"scopes"`
-	}
 	scopes, err := db.GetScopeListAll()
 	if err != nil {
 		log.Println("scopeList edb.GetScopeList ", err)
 		return err
 	}
-	ctx := context{Title: "List", Scopes: scopes}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":  "List",
+		"scopes": scopes,
+	})
 }
 
 func getScope(c echo.Context) error {
-	type context struct {
-		Title string    `json:"title"`
-		Scope edc.Scope `json:"scope"`
-	}
 	id := toInt(c.Param("id"))
 	scope, err := db.GetScope(id)
 	if err != nil {
 		log.Println("getScope edb.GetScope ", err)
 		return err
 	}
-	ctx := context{Title: "Create scope", Scope: scope}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title": "Create scope",
+		"scope": scope,
+	})
 }
 
 func createScope(c echo.Context) error {

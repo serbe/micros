@@ -9,6 +9,6 @@
 	},
 	"web": {
 		"port": "9090",
-		"log": true
+		"log": false
 	}
 }

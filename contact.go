@@ -23,15 +23,6 @@ func listContacts(c echo.Context) error {
 }
 
 func getContact(c echo.Context) error {
-	type context struct {
-		Title       string           `json:"title"`
-		Contact     edc.Contact      `json:"contact"`
-		Companies   []edc.SelectItem `json:"companies"`
-		Departments []edc.SelectItem `json:"departments"`
-		Posts       []edc.SelectItem `json:"posts"`
-		PostsGO     []edc.SelectItem `json:"posts_go"`
-		Ranks       []edc.SelectItem `json:"ranks"`
-	}
 	id := toInt(c.Param("id"))
 	contact, err := db.GetContact(id)
 	if err != nil {
@@ -63,8 +54,15 @@ func getContact(c echo.Context) error {
 		log.Println("getContact GetRankSelectAll ", err)
 		return err
 	}
-	ctx := context{Title: "Create contact", Contact: contact, Companies: companies, Departments: departments, Posts: posts, PostsGO: postsgo, Ranks: ranks}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":       "Create contact",
+		"contact":     contact,
+		"companies":   companies,
+		"departments": departments,
+		"posts":       posts,
+		"posts_go":    postsgo,
+		"ranks":       ranks,
+	})
 }
 
 func createContact(c echo.Context) error {

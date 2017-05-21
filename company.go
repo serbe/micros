@@ -9,25 +9,18 @@ import (
 )
 
 func listCompanies(c echo.Context) error {
-	type context struct {
-		Title     string            `json:"title"`
-		Companies []edc.CompanyList `json:"companies"`
-	}
 	companyes, err := db.GetCompanyList()
 	if err != nil {
 		log.Println("listCompanies db.GetCompanyList ", err)
 		return err
 	}
-	ctx := context{Title: "List company", Companies: companyes}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":     "List company",
+		"companies": companyes,
+	})
 }
 
 func getCompany(c echo.Context) error {
-	type context struct {
-		Title   string           `json:"title"`
-		Company edc.Company      `json:"company"`
-		Scopes  []edc.SelectItem `json:"scopes"`
-	}
 	id := toInt(c.Param("id"))
 	company, err := db.GetCompany(id)
 	if err != nil {
@@ -39,8 +32,11 @@ func getCompany(c echo.Context) error {
 		log.Println("getCompany GetScopeSelectAll", err)
 		return err
 	}
-	ctx := context{Title: "Get company", Company: company, Scopes: scopes}
-	return c.JSON(http.StatusOK, ctx)
+	return c.JSON(http.StatusOK, echo.Map{
+		"title":   "Get company",
+		"company": company,
+		"scopes":  scopes,
+	})
 }
 
 func createCompany(c echo.Context) error {
