@@ -22,9 +22,13 @@ func initServer(port string, useLog bool) {
 	e.POST("/auth/login", login)
 	// e.GET("/", accessible)
 
-	r := e.Group("/api/v1/")
-	r.Use(middleware.JWT([]byte("my5up3Rd4P3r53crEt")))
-	r.GET("", restricted)
+	r := e.Group("/api/v1")
+	config := middleware.JWTConfig{
+		Claims:     &jwtClaims{},
+		SigningKey: []byte("my5up3Rd4P3r53crEt"),
+	}
+	r.Use(middleware.JWTWithConfig(config))
+	// r.GET("", restricted)
 
 	r.GET("/contacts", listContacts)
 	r.POST("/contacts", createContact)
@@ -89,6 +93,6 @@ func initServer(port string, useLog bool) {
 	if useLog {
 		e.Logger.Fatal(e.Start(":" + port))
 	} else {
-		e.Start(":" + port)
+		_ = e.Start(":" + port)
 	}
 }

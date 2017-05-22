@@ -8,8 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// jwtCustomClaims are custom claims extending default ones.
-type jwtCustomClaims struct {
+type jwtClaims struct {
 	Name  string `json:"name"`
 	Admin bool   `json:"admin"`
 	jwt.StandardClaims
@@ -19,11 +18,15 @@ func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 	if username == "user" && password == "pass" {
-		token := jwt.New(jwt.SigningMethodHS256)
-		claims := token.Claims.(jwt.MapClaims)
-		claims["name"] = "Default User"
-		claims["admin"] = false
-		claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+		claims := &jwtClaims{
+			"Default User",
+			false,
+			jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+			},
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 		t, err := token.SignedString([]byte("my5up3Rd4P3r53crEt"))
 		if err != nil {
@@ -38,7 +41,7 @@ func login(c echo.Context) error {
 
 func restricted(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	name := claims["name"].(string)
+	claims := user.Claims.(*jwtClaims)
+	name := claims.Name
 	return c.String(http.StatusOK, "Welcome "+name+"!")
 }
