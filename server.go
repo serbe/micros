@@ -19,7 +19,7 @@ func initServer(port string, useLog bool) {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
-	e.POST("/auth/login", login)
+	e.POST("/login", login)
 	// e.GET("/", accessible)
 
 	r := e.Group("/api/v1")

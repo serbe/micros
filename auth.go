@@ -15,9 +15,12 @@ type jwtClaims struct {
 }
 
 func login(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	if username == "user" && password == "pass" {
+	ctx := struct {
+		Username string `json:"username" form:"username"`
+		Password string `json:"password" form:"password"`
+	}{}
+	c.Bind(&ctx)
+	if ctx.Username == "user" && ctx.Password == "pass" {
 		claims := &jwtClaims{
 			"Default User",
 			false,
