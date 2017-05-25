@@ -1,102 +1,147 @@
 package main
 
 import (
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"net/http"
+	"time"
+
+	"github.com/goware/cors"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/middleware"
+	"github.com/pressly/chi/render"
 )
 
 func initServer(port string, useLog bool) {
-	e := echo.New()
-
-	e.Use(middleware.Recover())
+	r := chi.NewRouter()
 
 	if useLog {
-		e.Use(middleware.Logger())
+		r.Use(middleware.Logger)
 	}
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Recoverer)
+	// r.Use(middleware.Compress())
+	r.Use(middleware.Timeout(60 * time.Second))
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:8080", "https://127.0.0.1:8080", "http://localhost", "http://localhost:80", "http://10.10.10.104", ""},
-		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
-	}))
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
-	e.File("/", "public/index.html")
-	e.File("/favicon.ico", "public/favicon.ico")
-	e.Static("/static", "public/static")
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8080"}, // Use this to allow specific origin hosts
+		// AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	r.Use(cors.Handler)
 
-	e.POST("/login", login)
+	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	w.Write([]byte("root."))
+	// })
 
-	r := e.Group("/api/v1")
-	config := middleware.JWTConfig{
-		Claims:     &jwtClaims{},
-		SigningKey: []byte("my5up3Rd4P3r53crEt"),
-	}
-	r.Use(middleware.JWTWithConfig(config))
-	// r.GET("", restricted)
+	//e.File("/", "public/index.html")
+	//e.File("/favicon.ico", "public/favicon.ico")
+	//e.Static("/static", "public/static")
 
-	r.GET("/contacts", listContacts)
-	r.POST("/contacts", createContact)
-	r.GET("/contacts/:id", getContact)
-	r.PUT("/contacts/:id", updateContact)
-	r.DELETE("/contacts/:id", deleteContact)
+	//e.POST("/login", login)
 
-	// r.With(paginate).GET("/", listCompanies)
-	r.GET("/companies", listCompanies)
-	r.POST("/companies", createCompany)
-	// r.GET("/search", SearchArticles)
-	r.GET("/companies/:id", getCompany)
-	r.PUT("/companies/:id", updateCompany)
-	r.DELETE("/companies/:id", deleteCompany)
+	// e.("/login", login)
 
-	r.GET("/scopes", listScopes)
-	r.POST("/scopes", createScope)
-	r.GET("/scopes/:id", getScope)
-	r.PUT("/scopes/:id", updateScope)
-	r.DELETE("/scopes/:id", deleteScope)
+	r.Route("/contacts", func(r chi.Router) {
+		r.Get("/", listContacts)
+		r.Post("/", createContact)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getContact)
+			r.Put("/", updateContact)
+			r.Delete("/", deleteContact)
+		})
+	})
 
-	r.GET("/educations", listEducations)
-	r.POST("/educations", createEducation)
-	r.GET("/educations/:id", getEducation)
-	r.PUT("/educations/:id", updateEducation)
-	r.DELETE("/educations/:id", deleteEducation)
+	r.Route("/companies", func(r chi.Router) {
+		// r.With(paginate).Get("/", listCompanies)
+		r.Get("/", listCompanies)
+		r.Post("/", createCompany)
+		// r.Get("/search", SearchArticles)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getCompany)
+			r.Put("/", updateCompany)
+			r.Delete("/", deleteCompany)
+		})
+	})
 
-	r.GET("/practices", listPractices)
-	r.POST("/practices", createPractice)
-	r.GET("/practices/:id", getPractice)
-	r.PUT("/practices/:id", updatePractice)
-	r.DELETE("/practices/:id", deletePractice)
+	r.Route("/scopes", func(r chi.Router) {
+		r.Get("/", listScopes)
+		r.Post("/", createScope)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getScope)
+			r.Put("/", updateScope)
+			r.Delete("/", deleteScope)
+		})
+	})
 
-	r.GET("/kinds", listKinds)
-	r.POST("/kinds", createKind)
-	r.GET("/kinds/:id", getKind)
-	r.PUT("/kinds/:id", updateKind)
-	r.DELETE("/kinds/:id", deleteKind)
+	r.Route("/educations", func(r chi.Router) {
+		r.Get("/", listEducations)
+		r.Post("/", createEducation)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getEducation)
+			r.Put("/", updateEducation)
+			r.Delete("/", deleteEducation)
+		})
+	})
 
-	r.GET("/posts", listPosts)
-	r.POST("/posts", createPost)
-	r.GET("/posts/:id", getPost)
-	r.PUT("/posts/:id", updatePost)
-	r.DELETE("/posts/:id", deletePost)
+	r.Route("/practices", func(r chi.Router) {
+		r.Get("/", listPractices)
+		r.Post("/", createPractice)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getPractice)
+			r.Put("/", updatePractice)
+			r.Delete("/", deletePractice)
+		})
+	})
 
-	r.GET("/ranks", listRanks)
-	r.POST("/ranks", createRank)
-	r.GET("/ranks/:id", getRank)
-	r.PUT("/ranks/:id", updateRank)
-	r.DELETE("/ranks/:id", deleteRank)
+	r.Route("/kinds", func(r chi.Router) {
+		r.Get("/", listKinds)
+		r.Post("/", createKind)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getKind)
+			r.Put("/", updateKind)
+			r.Delete("/", deleteKind)
+		})
+	})
 
-	r.GET("/departments", listDepartments)
-	r.POST("/departments", createDepartment)
-	r.GET("/departments/:id", getDepartment)
-	r.PUT("/departments/:id", updateDepartment)
-	r.DELETE("/departments/:id", deleteDepartment)
+	r.Route("/posts", func(r chi.Router) {
+		r.Get("/", listPosts)
+		r.Post("/", createPost)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getPost)
+			r.Put("/", updatePost)
+			r.Delete("/", deletePost)
+		})
+	})
+
+	r.Route("/ranks", func(r chi.Router) {
+		r.Get("/", listRanks)
+		r.Post("/", createRank)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getRank)
+			r.Put("/", updateRank)
+			r.Delete("/", deleteRank)
+		})
+	})
+
+	r.Route("/departments", func(r chi.Router) {
+		r.Get("/", listDepartments)
+		r.Post("/", createDepartment)
+		r.Route("/:id", func(r chi.Router) {
+			r.Get("/", getDepartment)
+			r.Put("/", updateDepartment)
+			r.Delete("/", deleteDepartment)
+		})
+	})
 
 	// e.("/about", about)
+	// e.File("/favicon.ico", "public/favicon.ico")
 	// e.Static("/public", "public")
 
-	e.File("/*", "public/index.html")
-
-	if useLog {
-		e.Logger.Fatal(e.Start(":" + port))
-	} else {
-		_ = e.Start(":" + port)
-	}
+	err := http.ListenAndServe(":"+port, r)
+	errmsg("ListenAndServe", err)
 }

@@ -1,58 +1,65 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listEducations(c echo.Context) error {
+func listEducations(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title      string              `json:"title"`
+		Educations []edc.EducationList `json:"educations"`
+	}
 	educations, err := db.GetEducationListAll()
 	if err != nil {
-		log.Println("educationList GetEducationList ", err)
-		return err
+		errmsg("listEducations GetEducationListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":      "List",
-		"educations": educations,
-	})
+	ctx := context{Title: "List", Educations: educations}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getEducation(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getEducation(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title     string        `json:"title"`
+		Education edc.Education `json:"education"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	education, err := db.GetEducation(id)
 	if err != nil {
-		log.Println("educationEdit db.GetEducation ", err)
-		return err
+		errmsg("educationEdit GetEducation", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":     "Create education",
-		"education": education,
-	})
+	ctx := context{Title: "Create education", Education: education}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createEducation(c echo.Context) error {
+func createEducation(w http.ResponseWriter, r *http.Request) {
 	var education edc.Education
-	err := c.Bind(&education)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateEducation(education)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createEducation Decode", decoder.Decode(&education))
+	defer func() {
+		errchkmsg("createEducation defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateEducation(education)
+	errchkmsg("createEducation CreateEducation", err)
 }
 
-func updateEducation(c echo.Context) error {
+func updateEducation(w http.ResponseWriter, r *http.Request) {
 	var education edc.Education
-	err := c.Bind(&education)
-	if err != nil {
-		return err
-	}
-	return db.UpdateEducation(education)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateEducation Decode", decoder.Decode(&education))
+	defer func() {
+		errchkmsg("updateEducation defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateEducation UpdateEducation", db.UpdateEducation(education))
 }
 
-func deleteEducation(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteEducation(id)
+func deleteEducation(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteEducation DeleteEducation", db.DeleteEducation(id))
 }

@@ -1,58 +1,68 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listRanks(c echo.Context) error {
+func listRanks(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string         `json:"title"`
+		Ranks []edc.RankList `json:"ranks"`
+	}
 	ranks, err := db.GetRankListAll()
 	if err != nil {
-		log.Println("rankList edb.GetRankList ", err)
-		return err
+		errmsg("listRanks GetRankListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "List",
-		"ranks": ranks,
-	})
+	ctx := context{Title: "List", Ranks: ranks}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getRank(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getRank(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string   `json:"title"`
+		Rank  edc.Rank `json:"rank"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	rank, err := db.GetRank(id)
 	if err != nil {
-		log.Println("getRank edb.GetRank ", err)
-		return err
+		errmsg("getRank GetRank", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "Create rank",
-		"rank":  rank,
-	})
+	ctx := context{Title: "Create rank", Rank: rank}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createRank(c echo.Context) error {
+func createRank(w http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
-	err := c.Bind(&rank)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateRank(rank)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createRank decode", decoder.Decode(&rank))
+	defer func() {
+		errchkmsg("createRank defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateRank(rank)
+	errchkmsg("createRank CreateRank", err)
+	return
 }
 
-func updateRank(c echo.Context) error {
+func updateRank(w http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
-	err := c.Bind(&rank)
-	if err != nil {
-		return err
-	}
-	return db.UpdateRank(rank)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateRank decode", decoder.Decode(&rank))
+	defer func() {
+		errchkmsg("updateRank defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateRank UpdateRank", db.UpdateRank(rank))
+	return
 }
 
-func deleteRank(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteRank(id)
+func deleteRank(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteRank DeleteRank", db.DeleteRank(id))
+	return
 }

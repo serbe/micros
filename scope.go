@@ -1,58 +1,68 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listScopes(c echo.Context) error {
+func listScopes(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title  string          `json:"title"`
+		Scopes []edc.ScopeList `json:"scopes"`
+	}
 	scopes, err := db.GetScopeListAll()
 	if err != nil {
-		log.Println("scopeList edb.GetScopeList ", err)
-		return err
+		errmsg("listScopes GetScopeListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":  "List",
-		"scopes": scopes,
-	})
+	ctx := context{Title: "List", Scopes: scopes}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getScope(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getScope(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string    `json:"title"`
+		Scope edc.Scope `json:"scope"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	scope, err := db.GetScope(id)
 	if err != nil {
-		log.Println("getScope edb.GetScope ", err)
-		return err
+		errmsg("getScope GetScope", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "Create scope",
-		"scope": scope,
-	})
+	ctx := context{Title: "Create scope", Scope: scope}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createScope(c echo.Context) error {
+func createScope(w http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
-	err := c.Bind(&scope)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateScope(scope)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createScope Decode", decoder.Decode(&scope))
+	defer func() {
+		errchkmsg("createScope defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateScope(scope)
+	errmsg("createScope CreateScope", err)
+	return
 }
 
-func updateScope(c echo.Context) error {
+func updateScope(w http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
-	err := c.Bind(&scope)
-	if err != nil {
-		return err
-	}
-	return db.UpdateScope(scope)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateScope decoder.Decode", decoder.Decode(&scope))
+	defer func() {
+		errchkmsg("updateScope defer Body.Close", r.Body.Close())
+	}()
+	errmsg("updateScope UpdateScope", db.UpdateScope(scope))
+	return
 }
 
-func deleteScope(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteScope(id)
+func deleteScope(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteScope", db.DeleteScope(id))
+	return
 }

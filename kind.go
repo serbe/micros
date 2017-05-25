@@ -1,58 +1,68 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listKinds(c echo.Context) error {
+func listKinds(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string         `json:"title"`
+		Kinds []edc.KindList `json:"kinds"`
+	}
 	kinds, err := db.GetKindListAll()
 	if err != nil {
-		log.Println("kindList edb.GetKindList ", err)
-		return err
+		errmsg("listKinds GetKindListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "List",
-		"kinds": kinds,
-	})
+	ctx := context{Title: "List", Kinds: kinds}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getKind(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getKind(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string   `json:"title"`
+		Kind  edc.Kind `json:"kind"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	kind, err := db.GetKind(id)
 	if err != nil {
-		log.Println("getKind edb.GetKind ", err)
-		return err
+		errmsg("getKind GetKind", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "Create kind",
-		"kind":  kind,
-	})
+	ctx := context{Title: "Create kind", Kind: kind}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createKind(c echo.Context) error {
+func createKind(w http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
-	err := c.Bind(&kind)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateKind(kind)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createKind Decode", decoder.Decode(&kind))
+	defer func() {
+		errchkmsg("createKind defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateKind(kind)
+	errchkmsg("createKind CreateKind", err)
+	return
 }
 
-func updateKind(c echo.Context) error {
+func updateKind(w http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
-	err := c.Bind(&kind)
-	if err != nil {
-		return err
-	}
-	return db.UpdateKind(kind)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateKind Decode", decoder.Decode(&kind))
+	defer func() {
+		errchkmsg("updateKind defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateKind UpdateKind", db.UpdateKind(kind))
+	return
 }
 
-func deleteKind(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteKind(id)
+func deleteKind(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("createEducation CreateEducation", db.DeleteKind(id))
+	return
 }

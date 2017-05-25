@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	db *edc.Edb
+	db        *edc.Edb
+	logErrors bool
 )
 
 // Config all vars
@@ -34,21 +35,36 @@ type Config struct {
 func getConfig() (c Config, err error) {
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
-		log.Println("Error ioutil.ReadFile: ", err)
+		errmsg("getConfig ReadFile", err)
 		return
 	}
 	if err = json.Unmarshal(file, &c); err != nil {
-		log.Println("Error json.Unmarshal: ", err)
+		errmsg("getConfig Unmarshal", err)
 		return
 	}
+	logErrors = c.Base.LogErr
 	if c.Base.Dbname == "" {
-		log.Println("Error: empty database name in config")
-		return c, errors.New("Error: empty database name in config")
+		err := errors.New("Error: empty database name in config")
+		errmsg("getConfig", err)
+		return c, err
 	}
 	return
 }
 
 func toInt(num string) int64 {
-	id, _ := strconv.ParseInt(num, 10, 64)
+	id, err := strconv.ParseInt(num, 10, 64)
+	errmsg("toInt", err)
 	return id
+}
+
+func errmsg(str string, err error) {
+	if logErrors {
+		log.Println("Error in", str, err)
+	}
+}
+
+func errchkmsg(str string, err error) {
+	if logErrors && err != nil {
+		log.Println("Error in", str, err)
+	}
 }

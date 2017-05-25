@@ -1,58 +1,68 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listPosts(c echo.Context) error {
+func listPosts(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string         `json:"title"`
+		Posts []edc.PostList `json:"posts"`
+	}
 	posts, err := db.GetPostListAll()
 	if err != nil {
-		log.Println("postList edb.GetPostList ", err)
-		return err
+		errmsg("listPosts GetPostListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "List",
-		"posts": posts,
-	})
+	ctx := context{Title: "List", Posts: posts}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getPost(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getPost(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title string   `json:"title"`
+		Post  edc.Post `json:"post"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	post, err := db.GetPost(id)
 	if err != nil {
-		log.Println("getPost edb.GetPost ", err)
-		return err
+		errmsg("getPost GetPost", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title": "Create post",
-		"post":  post,
-	})
+	ctx := context{Title: "Create post", Post: post}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createPost(c echo.Context) error {
+func createPost(w http.ResponseWriter, r *http.Request) {
 	var post edc.Post
-	err := c.Bind(&post)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreatePost(post)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createPost Decode", decoder.Decode(&post))
+	defer func() {
+		errchkmsg("createPost defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreatePost(post)
+	errchkmsg("createPost CreatePost", err)
+	return
 }
 
-func updatePost(c echo.Context) error {
+func updatePost(w http.ResponseWriter, r *http.Request) {
 	var post edc.Post
-	err := c.Bind(&post)
-	if err != nil {
-		return err
-	}
-	return db.UpdatePost(post)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createPost Decode", decoder.Decode(&post))
+	defer func() {
+		errchkmsg("updatePost defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("createPost UpdatePost", db.UpdatePost(post))
+	return
 }
 
-func deletePost(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeletePost(id)
+func deletePost(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("createPost DeletePost", db.DeletePost(id))
+	return
 }

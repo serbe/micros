@@ -1,90 +1,95 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listContacts(c echo.Context) error {
+func listContacts(w http.ResponseWriter, r *http.Request) {
 	type context struct {
 		Title    string            `json:"title"`
 		Contacts []edc.ContactList `json:"contacts"`
 	}
 	contacts, err := db.GetContactList()
 	if err != nil {
-		log.Println("listContacts GetContactList ", err)
-		return err
+		errmsg("listContacts GetContactList", err)
+		return
 	}
 	ctx := context{Title: "List", Contacts: contacts}
-	return c.JSON(http.StatusOK, ctx)
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getContact(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getContact(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title       string           `json:"title"`
+		Contact     edc.Contact      `json:"contact"`
+		Companies   []edc.SelectItem `json:"companies"`
+		Departments []edc.SelectItem `json:"departments"`
+		Posts       []edc.SelectItem `json:"posts"`
+		PostsGO     []edc.SelectItem `json:"posts_go"`
+		Ranks       []edc.SelectItem `json:"ranks"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	contact, err := db.GetContact(id)
 	if err != nil {
-		log.Println("getContact GetContact ", err)
-		return err
+		errmsg("getContact GetContact", err)
+		return
 	}
 	companies, err := db.GetCompanySelectAll()
 	if err != nil {
-		log.Println("getContact GetCompanySelectAll ", err)
-		return err
+		errmsg("getContact GetCompanySelectAll", err)
+		return
 	}
 	departments, err := db.GetDepartmentSelectAll()
 	if err != nil {
-		log.Println("getContact GetDepartmentSelectAll ", err)
-		return err
+		errmsg("getContact GetDepartmentSelectAll", err)
+		return
 	}
 	posts, err := db.GetPostSelectAll(false)
 	if err != nil {
-		log.Println("getContact GetPostSelectAll(false) ", err)
-		return err
+		errmsg("getContact GetPostSelectAll(false)", err)
+		return
 	}
 	postsgo, err := db.GetPostSelectAll(true)
 	if err != nil {
-		log.Println("getContact GetPostSelectAll(true) ", err)
-		return err
+		errmsg("getContact GetPostSelectAll(true)", err)
+		return
 	}
 	ranks, err := db.GetRankSelectAll()
 	if err != nil {
-		log.Println("getContact GetRankSelectAll ", err)
-		return err
+		errmsg("getContact GetRankSelectAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":       "Create contact",
-		"contact":     contact,
-		"companies":   companies,
-		"departments": departments,
-		"posts":       posts,
-		"posts_go":    postsgo,
-		"ranks":       ranks,
-	})
+	ctx := context{Title: "Create contact", Contact: contact, Companies: companies, Departments: departments, Posts: posts, PostsGO: postsgo, Ranks: ranks}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createContact(c echo.Context) error {
+func createContact(w http.ResponseWriter, r *http.Request) {
 	var contact edc.Contact
-	err := c.Bind(&contact)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateContact(contact)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createContact Decode", decoder.Decode(&contact))
+	defer func() {
+		errchkmsg("createContact defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateContact(contact)
+	errchkmsg("createContact CreateContact", err)
 }
 
-func updateContact(c echo.Context) error {
+func updateContact(w http.ResponseWriter, r *http.Request) {
 	var contact edc.Contact
-	err := c.Bind(&contact)
-	if err != nil {
-		return err
-	}
-	return db.UpdateContact(contact)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateContact Decode", decoder.Decode(&contact))
+	defer func() {
+		errchkmsg("updateContact defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateContact UpdateContact", db.UpdateContact(contact))
 }
 
-func deleteContact(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteContact(id)
+func deleteContact(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteContact DeleteContact", db.DeleteContact(id))
 }

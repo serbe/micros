@@ -1,58 +1,68 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listDepartments(c echo.Context) error {
+func listDepartments(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title       string               `json:"title"`
+		Departments []edc.DepartmentList `json:"departments"`
+	}
 	departments, err := db.GetDepartmentListAll()
 	if err != nil {
-		log.Println("departmentList edb.GetDepartmentList ", err)
-		return err
+		errmsg("listDepartments GetDepartmentListAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":       "List",
-		"departments": departments,
-	})
+	ctx := context{Title: "List", Departments: departments}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getDepartment(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getDepartment(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title      string         `json:"title"`
+		Department edc.Department `json:"department"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	department, err := db.GetDepartment(id)
 	if err != nil {
-		log.Println("getDepartment edb.GetDepartment ", err)
-		return err
+		errmsg("getDepartment GetDepartment", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":      "Create department",
-		"department": department,
-	})
+	ctx := context{Title: "Create department", Department: department}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createDepartment(c echo.Context) error {
+func createDepartment(w http.ResponseWriter, r *http.Request) {
 	var department edc.Department
-	err := c.Bind(&department)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateDepartment(department)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createDepartment Decode", decoder.Decode(&department))
+	defer func() {
+		errchkmsg("createDepartment defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateDepartment(department)
+	errchkmsg("createDepartment CreateDepartment", err)
+	return
 }
 
-func updateDepartment(c echo.Context) error {
+func updateDepartment(w http.ResponseWriter, r *http.Request) {
 	var department edc.Department
-	err := c.Bind(&department)
-	if err != nil {
-		return err
-	}
-	return db.UpdateDepartment(department)
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateDepartment Decode", decoder.Decode(&department))
+	defer func() {
+		errchkmsg("updateDepartment defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateDepartment UpdateDepartment", db.UpdateDepartment(department))
+	return
 }
 
-func deleteDepartment(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteDepartment(id)
+func deleteDepartment(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteDepartment DeleteDepartment", db.DeleteDepartment(id))
+	return
 }

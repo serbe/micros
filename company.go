@@ -1,65 +1,71 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/render"
 	"github.com/serbe/edc"
 )
 
-func listCompanies(c echo.Context) error {
+func listCompanies(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title     string            `json:"title"`
+		Companies []edc.CompanyList `json:"companies"`
+	}
 	companyes, err := db.GetCompanyList()
 	if err != nil {
-		log.Println("listCompanies db.GetCompanyList ", err)
-		return err
+		errmsg("listCompanies GetCompanyList", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":     "List company",
-		"companies": companyes,
-	})
+	ctx := context{Title: "List company", Companies: companyes}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func getCompany(c echo.Context) error {
-	id := toInt(c.Param("id"))
+func getCompany(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title   string           `json:"title"`
+		Company edc.Company      `json:"company"`
+		Scopes  []edc.SelectItem `json:"scopes"`
+	}
+	id := toInt(chi.URLParam(r, "id"))
 	company, err := db.GetCompany(id)
 	if err != nil {
-		log.Println("getCompany db.GetCompany", err)
-		return err
+		errmsg("getCompany GetCompany", err)
+		return
 	}
 	scopes, err := db.GetScopeSelectAll()
 	if err != nil {
-		log.Println("getCompany GetScopeSelectAll", err)
-		return err
+		errmsg("getCompany GetScopeSelectAll", err)
+		return
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"title":   "Get company",
-		"company": company,
-		"scopes":  scopes,
-	})
+	ctx := context{Title: "Get company", Company: company, Scopes: scopes}
+	render.DefaultResponder(w, r, ctx)
 }
 
-func createCompany(c echo.Context) error {
+func createCompany(w http.ResponseWriter, r *http.Request) {
 	var company edc.Company
-	err := c.Bind(&company)
-	if err != nil {
-		return err
-	}
-	_, err = db.CreateCompany(company)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("createCompany Decode", decoder.Decode(&company))
+	defer func() {
+		errchkmsg("createCompany defer Body.Close", r.Body.Close())
+	}()
+	_, err := db.CreateCompany(company)
+	errchkmsg("createCompany CreateCompany", err)
 }
 
-func updateCompany(c echo.Context) error {
+func updateCompany(w http.ResponseWriter, r *http.Request) {
 	var company edc.Company
-	err := c.Bind(&company)
-	if err != nil {
-		return err
-	}
-	err = db.UpdateCompany(company)
-	return err
+	decoder := json.NewDecoder(r.Body)
+	errchkmsg("updateCompany Decode", decoder.Decode(&company))
+	defer func() {
+		errchkmsg("updateCompany defer Body.Close", r.Body.Close())
+	}()
+	errchkmsg("updateCompany UpdateCompany", db.UpdateCompany(company))
 }
 
-func deleteCompany(c echo.Context) error {
-	id := toInt(c.Param("id"))
-	return db.DeleteCompany(id)
+func deleteCompany(w http.ResponseWriter, r *http.Request) {
+	id := toInt(chi.URLParam(r, "id"))
+	errchkmsg("deleteCompany DeleteCompany", db.DeleteCompany(id))
 }
