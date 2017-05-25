@@ -15,12 +15,15 @@ func initServer(port string, useLog bool) {
 	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:8080", "https://127.0.0.1:8080", "http://localhost"},
+		AllowOrigins: []string{"http://localhost:8080", "https://127.0.0.1:8080", "http://localhost", "http://localhost:80", "http://10.10.10.104", ""},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
+	e.File("/", "public/index.html")
+	e.File("/favicon.ico", "public/favicon.ico")
+	e.Static("/static", "public/static")
+
 	e.POST("/login", login)
-	// e.GET("/", accessible)
 
 	r := e.Group("/api/v1")
 	config := middleware.JWTConfig{
@@ -87,8 +90,9 @@ func initServer(port string, useLog bool) {
 	r.DELETE("/departments/:id", deleteDepartment)
 
 	// e.("/about", about)
-	// e.File("/favicon.ico", "public/favicon.ico")
 	// e.Static("/public", "public")
+
+	e.File("/*", "public/index.html")
 
 	if useLog {
 		e.Logger.Fatal(e.Start(":" + port))
