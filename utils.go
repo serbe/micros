@@ -53,7 +53,7 @@ func getConfig() (c Config, err error) {
 
 func toInt(num string) int64 {
 	id, err := strconv.ParseInt(num, 10, 64)
-	errmsg("toInt", err)
+	errchkmsg("toInt", err)
 	return id
 }
 
