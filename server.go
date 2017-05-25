@@ -24,8 +24,8 @@ func initServer(port string, useLog bool) {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080"}, // Use this to allow specific origin hosts
 		// AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:8080"}, // Use this to allow specific origin hosts
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -46,7 +46,7 @@ func initServer(port string, useLog bool) {
 
 	// e.("/login", login)
 
-	r.Route("/contacts", func(r chi.Router) {
+	r.Route("/api/v1/contacts", func(r chi.Router) {
 		r.Get("/", listContacts)
 		r.Post("/", createContact)
 		r.Route("/:id", func(r chi.Router) {
@@ -56,7 +56,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/companies", func(r chi.Router) {
+	r.Route("/api/v1/companies", func(r chi.Router) {
 		// r.With(paginate).Get("/", listCompanies)
 		r.Get("/", listCompanies)
 		r.Post("/", createCompany)
@@ -68,7 +68,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/scopes", func(r chi.Router) {
+	r.Route("/api/v1/scopes", func(r chi.Router) {
 		r.Get("/", listScopes)
 		r.Post("/", createScope)
 		r.Route("/:id", func(r chi.Router) {
@@ -78,7 +78,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/educations", func(r chi.Router) {
+	r.Route("/api/v1/educations", func(r chi.Router) {
 		r.Get("/", listEducations)
 		r.Post("/", createEducation)
 		r.Route("/:id", func(r chi.Router) {
@@ -88,7 +88,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/practices", func(r chi.Router) {
+	r.Route("/api/v1/practices", func(r chi.Router) {
 		r.Get("/", listPractices)
 		r.Post("/", createPractice)
 		r.Route("/:id", func(r chi.Router) {
@@ -98,7 +98,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/kinds", func(r chi.Router) {
+	r.Route("/api/v1/kinds", func(r chi.Router) {
 		r.Get("/", listKinds)
 		r.Post("/", createKind)
 		r.Route("/:id", func(r chi.Router) {
@@ -108,7 +108,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/posts", func(r chi.Router) {
+	r.Route("/api/v1/posts", func(r chi.Router) {
 		r.Get("/", listPosts)
 		r.Post("/", createPost)
 		r.Route("/:id", func(r chi.Router) {
@@ -118,7 +118,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/ranks", func(r chi.Router) {
+	r.Route("/api/v1/ranks", func(r chi.Router) {
 		r.Get("/", listRanks)
 		r.Post("/", createRank)
 		r.Route("/:id", func(r chi.Router) {
@@ -128,7 +128,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	r.Route("/departments", func(r chi.Router) {
+	r.Route("/api/v1/departments", func(r chi.Router) {
 		r.Get("/", listDepartments)
 		r.Post("/", createDepartment)
 		r.Route("/:id", func(r chi.Router) {
