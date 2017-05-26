@@ -5,6 +5,9 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
+	"path"
 	"strconv"
 
 	"github.com/serbe/edc"
@@ -67,4 +70,38 @@ func errchkmsg(str string, err error) {
 	if logErrors && err != nil {
 		log.Println("Error in", str, err)
 	}
+}
+
+func icoHandler(w http.ResponseWriter, r *http.Request) {
+	buf, err := readFile("favicon.ico")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "image/x-icon")
+	w.Write(buf)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	buf, err := readFile("index.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html")
+	w.Write(buf)
+}
+
+func readFile(file string) ([]byte, error) {
+	workDir, _ := os.Getwd()
+	fileName := path.Base(path.Clean(file))
+	filePath := path.Dir(path.Clean(file))
+	fp, err := os.Open(path.Join(workDir, "public", filePath, fileName))
+	log.Println(path.Join(workDir, "public", filePath, fileName))
+	if err != nil {
+		return nil, err
+	}
+	defer fp.Close()
+
+	return ioutil.ReadAll(fp)
 }

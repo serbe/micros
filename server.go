@@ -38,8 +38,9 @@ func initServer(port string, useLog bool) {
 	// 	w.Write([]byte("root."))
 	// })
 
-	//e.File("/", "public/index.html")
-	//e.File("/favicon.ico", "public/favicon.ico")
+	r.Get("/", indexHandler)
+	r.Get("/favicon.ico", icoHandler)
+
 	//e.Static("/static", "public/static")
 
 	//e.POST("/login", login)
@@ -138,7 +139,7 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	// e.("/about", about)
+	r.NotFound(indexHandler)
 	// e.File("/favicon.ico", "public/favicon.ico")
 	// e.Static("/public", "public")
 
