@@ -46,7 +46,12 @@ func getPractice(w http.ResponseWriter, r *http.Request) {
 		errmsg("getPractice GetKindSelectAll", err)
 		return
 	}
-	ctx := context{Title: "Create practice", Practice: practice, Companies: companies, Kinds: kinds}
+	ctx := context{
+		Title:     "Create practice",
+		Practice:  practice,
+		Companies: companies,
+		Kinds:     kinds,
+	}
 	render.DefaultResponder(w, r, ctx)
 }
 

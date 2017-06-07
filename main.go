@@ -9,7 +9,14 @@ func main() {
 	if err != nil {
 		return
 	}
-	db, err = edc.InitDB(cfg.Base.Dbname, cfg.Base.User, cfg.Base.Password, cfg.Base.LogSQL, cfg.Base.LogErr)
+	db, err = edc.InitDB(
+		cfg.Base.Host,
+		cfg.Base.Dbname,
+		cfg.Base.User,
+		cfg.Base.Password,
+		cfg.Base.LogSQL,
+		cfg.Base.LogErr,
+	)
 	if err != nil {
 		return
 	}

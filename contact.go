@@ -64,7 +64,15 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 		errmsg("getContact GetRankSelectAll", err)
 		return
 	}
-	ctx := context{Title: "Create contact", Contact: contact, Companies: companies, Departments: departments, Posts: posts, PostsGO: postsgo, Ranks: ranks}
+	ctx := context{
+		Title:       "Create contact",
+		Contact:     contact,
+		Companies:   companies,
+		Departments: departments,
+		Posts:       posts,
+		PostsGO:     postsgo,
+		Ranks:       ranks,
+	}
 	render.DefaultResponder(w, r, ctx)
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/goware/cors"
@@ -25,27 +26,30 @@ func initServer(port string, useLog bool) {
 
 	cors := cors.New(cors.Options{
 		// AllowedOrigins:   []string{"*"},
-		AllowedOrigins:   []string{"http://localhost:8080"}, // Use this to allow specific origin hosts
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedOrigins: []string{"http://localhost:8080"},
+		AllowedMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+			"OPTIONS",
+		},
+		AllowedHeaders: []string{
+			"Accept",
+			"Authorization",
+			"Content-Type",
+			"X-CSRF-Token",
+		},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
 	r.Use(cors.Handler)
 
-	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write([]byte("root."))
-	// })
-
 	r.Get("/", indexHandler)
-	r.Get("/favicon.ico", icoHandler)
+	r.Get("/favicon.ico", serveFileHandler)
 
-	//e.Static("/static", "public/static")
-
-	//e.POST("/login", login)
-
-	// e.("/login", login)
+	r.FileServer("/static", http.Dir(filepath.Join("public", "static")))
 
 	r.Route("/api/v1/contacts", func(r chi.Router) {
 		r.Get("/", listContacts)
@@ -140,8 +144,6 @@ func initServer(port string, useLog bool) {
 	})
 
 	r.NotFound(indexHandler)
-	// e.File("/favicon.ico", "public/favicon.ico")
-	// e.Static("/public", "public")
 
 	err := http.ListenAndServe(":"+port, r)
 	errmsg("ListenAndServe", err)
