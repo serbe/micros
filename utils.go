@@ -5,9 +5,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"path"
-	"path/filepath"
 	"strconv"
 
 	"github.com/serbe/edc"
@@ -69,13 +66,4 @@ func errchkmsg(str string, err error) {
 	if logErrors && err != nil {
 		log.Println("Error in", str, err)
 	}
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, filepath.Join("public", "index.html"))
-}
-
-func serveFileHandler(w http.ResponseWriter, r *http.Request) {
-	fname := path.Base(r.URL.Path)
-	http.ServeFile(w, r, filepath.Join("public", fname))
 }
