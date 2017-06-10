@@ -5,12 +5,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/goware/jwtauth"
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/middleware"
 	"github.com/pressly/chi/render"
 )
 
 func initServer(port string, useLog bool) {
+	tokenInit()
+
 	r := chi.NewRouter()
 
 	if useLog {
@@ -32,8 +35,16 @@ func initServer(port string, useLog bool) {
 	r.NotFound(indexHandler)
 	// })
 
+	r.Group(func(r chi.Router) {
+		r.Use(corsHandler().Handler)
+		r.Post("/login", login)
+	})
+
 	// REST API
 	r.Group(func(r chi.Router) {
+		r.Use(tokenAuth.Verifier)
+		r.Use(jwtauth.Authenticator)
+
 		r.Use(render.SetContentType(render.ContentTypeJSON))
 		r.Use(corsHandler().Handler)
 

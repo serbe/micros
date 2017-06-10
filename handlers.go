@@ -22,6 +22,7 @@ func corsHandler() *cors.Cors {
 		// AllowedOrigins:   []string{"*"},
 		AllowedOrigins: []string{
 			"http://localhost:8080",
+			// "http://localhost:9090",
 		},
 		AllowedMethods: []string{
 			"GET",
