@@ -12,7 +12,7 @@ import (
 )
 
 func initServer(port string, useLog bool) {
-	tokenInit()
+	tokenAuth = jwtauth.New("HS256", sKey, nil)
 
 	r := chi.NewRouter()
 
@@ -23,20 +23,16 @@ func initServer(port string, useLog bool) {
 	r.Use(middleware.Recoverer)
 	// r.Use(middleware.Compress())
 	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(corsHandler)
 
 	// Frontend
-	// r.Group(func(r chi.Router) {
 	r.Get("/", indexHandler)
 	r.Get("/favicon.ico", serveFileHandler)
-
-	// 	r.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join("public", "static")))))
 	r.FileServer("/static", http.Dir(filepath.Join("public", "static")))
-
 	r.NotFound(indexHandler)
-	// })
 
+	// Auth
 	r.Group(func(r chi.Router) {
-		r.Use(corsHandler().Handler)
 		r.Post("/login", login)
 	})
 
@@ -46,7 +42,6 @@ func initServer(port string, useLog bool) {
 		r.Use(jwtauth.Authenticator)
 
 		r.Use(render.SetContentType(render.ContentTypeJSON))
-		r.Use(corsHandler().Handler)
 
 		r.Route("/api/v1/contacts", func(r chi.Router) {
 			r.Get("/", listContacts)
