@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"path"
 	"path/filepath"
-
-	"github.com/goware/cors"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,31 +15,17 @@ func serveFileHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filepath.Join("public", fname))
 }
 
-func corsHandler() *cors.Cors {
-	newCors := cors.New(cors.Options{
-		// AllowedOrigins:   []string{"*"},
-		AllowedOrigins: []string{
-			"http://localhost:8080",
-			// "http://localhost:9090",
-		},
-		AllowedMethods: []string{
-			"GET",
-			"POST",
-			"PUT",
-			"DELETE",
-			"OPTIONS",
-		},
-		AllowedHeaders: []string{
-			"Accept",
-			"Authorization",
-			"Content-Type",
-			"X-CSRF-Token",
-		},
-		ExposedHeaders: []string{
-			"Link",
-		},
-		AllowCredentials: true,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
+func corsHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == "OPTIONS" {
+			return
+		}
+		h.ServeHTTP(w, r)
 	})
-	return newCors
 }
