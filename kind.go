@@ -63,6 +63,6 @@ func updateKind(w http.ResponseWriter, r *http.Request) {
 
 func deleteKind(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
-	errchkmsg("createEducation CreateEducation", db.DeleteKind(id))
+	errchkmsg("deleteKind DeleteKind", db.DeleteKind(id))
 	return
 }

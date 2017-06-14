@@ -53,16 +53,16 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 func updatePost(w http.ResponseWriter, r *http.Request) {
 	var post edc.Post
 	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createPost Decode", decoder.Decode(&post))
+	errchkmsg("updatePost Decode", decoder.Decode(&post))
 	defer func() {
 		errchkmsg("updatePost defer Body.Close", r.Body.Close())
 	}()
-	errchkmsg("createPost UpdatePost", db.UpdatePost(post))
+	errchkmsg("updatePost UpdatePost", db.UpdatePost(post))
 	return
 }
 
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
-	errchkmsg("createPost DeletePost", db.DeletePost(id))
+	errchkmsg("deletePost DeletePost", db.DeletePost(id))
 	return
 }
