@@ -20,5 +20,5 @@ func main() {
 	if err != nil {
 		return
 	}
-	initServer(cfg.Web.Port, cfg.Web.Log)
+	initServer(cfg.Web.Host+":"+cfg.Web.Port, cfg.Web.Log)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/pressly/chi/render"
 )
 
-func initServer(port string, useLog bool) {
+func initServer(host string, useLog bool) {
 	tokenAuth = jwtauth.New("HS256", sKey, nil)
 
 	r := chi.NewRouter()
@@ -156,6 +156,6 @@ func initServer(port string, useLog bool) {
 		})
 	})
 
-	err := http.ListenAndServe(":"+port, r)
+	err := http.ListenAndServe(host, r)
 	errmsg("ListenAndServe", err)
 }

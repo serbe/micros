@@ -26,6 +26,7 @@ type Config struct {
 		LogErr   bool   `json:"logerr"`
 	} `json:"base"`
 	Web struct {
+		Host string `json:"host"`
 		Port string `json:"port"`
 		Log  bool   `json:"log"`
 	} `json:"web"`
