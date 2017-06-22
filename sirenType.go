@@ -12,7 +12,7 @@ import (
 func listSirenTypes(w http.ResponseWriter, r *http.Request) {
 	type context struct {
 		Title      string              `json:"title"`
-		SirenTypes []edc.SirenTypeList `json:"siren_type"`
+		SirenTypes []edc.SirenTypeList `json:"siren_types"`
 	}
 	sirenTypes, err := db.GetSirenTypeListAll()
 	if err != nil {

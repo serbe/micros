@@ -134,6 +134,26 @@ func initServer(port string, useLog bool) {
 				r.Delete("/", deleteDepartment)
 			})
 		})
+
+		r.Route("/api/v1/sirens", func(r chi.Router) {
+			r.Get("/", listSiren)
+			r.Post("/", createSiren)
+			r.Route("/:id", func(r chi.Router) {
+				r.Get("/", getSiren)
+				r.Put("/", updateSiren)
+				r.Delete("/", deleteSiren)
+			})
+		})
+
+		r.Route("/api/v1/sirentypes", func(r chi.Router) {
+			r.Get("/", listSirenTypes)
+			r.Post("/", createSirenType)
+			r.Route("/:id", func(r chi.Router) {
+				r.Get("/", getSirenType)
+				r.Put("/", updateSirenType)
+				r.Delete("/", deleteSirenType)
+			})
+		})
 	})
 
 	err := http.ListenAndServe(":"+port, r)
