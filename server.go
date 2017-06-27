@@ -87,6 +87,7 @@ func initServer(host string, useLog bool) {
 
 		r.Route("/api/v1/practices", func(r chi.Router) {
 			r.Get("/", listPractices)
+			r.Get("/near", listPracticesNear)
 			r.Post("/", createPractice)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", getPractice)

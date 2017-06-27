@@ -23,6 +23,20 @@ func listPractices(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
+func listPracticesNear(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title     string             `json:"title"`
+		Practices []edc.PracticeList `json:"practices"`
+	}
+	practices, err := db.GetPracticeNear()
+	if err != nil {
+		errmsg("listPracticesNear GetPracticeNear", err)
+		return
+	}
+	ctx := context{Title: "List", Practices: practices}
+	render.DefaultResponder(w, r, ctx)
+}
+
 func getPractice(w http.ResponseWriter, r *http.Request) {
 	type context struct {
 		Title     string           `json:"title"`
