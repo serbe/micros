@@ -14,9 +14,9 @@ func listSiren(w http.ResponseWriter, r *http.Request) {
 		Title  string          `json:"title"`
 		Sirens []edc.SirenList `json:"sirens"`
 	}
-	sirens, err := db.GetSirenListAll()
+	sirens, err := db.GetSirenList()
 	if err != nil {
-		errmsg("listSirens GetSirenListAll", err)
+		errmsg("listSirens GetSirenList", err)
 		return
 	}
 	ctx := context{Title: "List", Sirens: sirens}
@@ -25,8 +25,11 @@ func listSiren(w http.ResponseWriter, r *http.Request) {
 
 func getSiren(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title string    `json:"title"`
-		Siren edc.Siren `json:"siren"`
+		Title      string           `json:"title"`
+		Siren      edc.Siren        `json:"siren"`
+		Contacts   []edc.SelectItem `json:"contacts"`
+		Companies  []edc.SelectItem `json:"companies"`
+		SirenTypes []edc.SelectItem `json:"siren_types"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	siren, err := db.GetSiren(id)
@@ -34,7 +37,28 @@ func getSiren(w http.ResponseWriter, r *http.Request) {
 		errmsg("getSiren GetSiren", err)
 		return
 	}
-	ctx := context{Title: "Create siren type", Siren: siren}
+	contacts, err := db.GetContactSelectAll()
+	if err != nil {
+		errmsg("getSiren GetContactSelectAll", err)
+		return
+	}
+	companies, err := db.GetCompanySelectAll()
+	if err != nil {
+		errmsg("getSiren GetCompanySelectAll", err)
+		return
+	}
+	sirenTypes, err := db.GetSirenTypeSelectAll()
+	if err != nil {
+		errmsg("getSiren GetSirenTypeSelectAll", err)
+		return
+	}
+	ctx := context{
+		Title:      "Create siren type",
+		Siren:      siren,
+		Contacts:   contacts,
+		Companies:  companies,
+		SirenTypes: sirenTypes,
+	}
 	render.DefaultResponder(w, r, ctx)
 }
 
