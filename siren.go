@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/pressly/chi"
@@ -69,6 +70,7 @@ func createSiren(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		errchkmsg("createSiren defer Body.Close", r.Body.Close())
 	}()
+	log.Println(siren)
 	_, err := db.CreateSiren(siren)
 	errchkmsg("createSiren CreateSiren", err)
 	return
@@ -81,6 +83,7 @@ func updateSiren(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		errchkmsg("updateSiren defer Body.Close", r.Body.Close())
 	}()
+	log.Println(siren)
 	errchkmsg("updateSiren UpdateSiren", db.UpdateSiren(siren))
 	return
 }

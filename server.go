@@ -77,6 +77,7 @@ func initServer(host string, useLog bool) {
 
 		r.Route("/api/v1/educations", func(r chi.Router) {
 			r.Get("/", listEducations)
+			r.Get("/near", listEducationsNear)
 			r.Post("/", createEducation)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", getEducation)

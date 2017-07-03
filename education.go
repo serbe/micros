@@ -23,10 +23,25 @@ func listEducations(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
+func listEducationsNear(w http.ResponseWriter, r *http.Request) {
+	type context struct {
+		Title      string              `json:"title"`
+		Educations []edc.EducationList `json:"educations"`
+	}
+	educations, err := db.GetEducationNear()
+	if err != nil {
+		errmsg("lisEducationsNear GetEducationNear", err)
+		return
+	}
+	ctx := context{Title: "List", Educations: educations}
+	render.DefaultResponder(w, r, ctx)
+}
+
 func getEducation(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title     string        `json:"title"`
-		Education edc.Education `json:"education"`
+		Title     string           `json:"title"`
+		Education edc.Education    `json:"education"`
+		Contacts  []edc.SelectItem `json:"contacts"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	education, err := db.GetEducation(id)
@@ -34,7 +49,12 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 		errmsg("educationEdit GetEducation", err)
 		return
 	}
-	ctx := context{Title: "Create education", Education: education}
+	contacts, err := db.GetContactSelectAll()
+	if err != nil {
+		errmsg("lisEducationsNear GetContactSelectAll", err)
+		return
+	}
+	ctx := context{Title: "Create education", Education: education, Contacts: contacts}
 	render.DefaultResponder(w, r, ctx)
 }
 
