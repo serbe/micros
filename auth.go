@@ -7,7 +7,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/goware/jwtauth"
-	"github.com/pressly/chi/render"
+	"github.com/go-chi/render"
 )
 
 var sKey = []byte("my5up3RdYP3r53crEt")

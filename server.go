@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/goware/jwtauth"
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/middleware"
-	"github.com/pressly/chi/render"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/render"
 )
 
 func initServer(host string, useLog bool) {
