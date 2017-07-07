@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/goware/jwtauth"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+	"github.com/goware/jwtauth"
 )
 
 func initServer(host string, useLog bool) {
@@ -38,7 +38,7 @@ func initServer(host string, useLog bool) {
 
 	// REST API
 	r.Group(func(r chi.Router) {
-		r.Use(tokenAuth.Verifier)
+		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
 
 		r.Use(render.SetContentType(render.ContentTypeJSON))
