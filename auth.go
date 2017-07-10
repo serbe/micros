@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/goware/jwtauth"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 )
 
@@ -45,12 +44,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if data.Username == "user" && data.Password == "userpass" {
-		token := jwt.New(jwt.SigningMethodHS256)
-		claims := token.Claims.(jwt.MapClaims)
-		claims["admin"] = false
-		claims["name"] = data.Username
-		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-		tokenString, err := token.SignedString(sKey)
+		_, tokenString, err := tokenAuth.Encode(jwtauth.Claims{
+			"admin": false,
+			"name":  data.Username,
+			"exp":   time.Now().Add(time.Hour * 24).Unix(),
+		})
 		if err != nil {
 			errmsg("login SignedString", err)
 			render.Status(r, http.StatusInternalServerError)
