@@ -47,7 +47,6 @@ func createRank(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreateRank(rank)
 	errchkmsg("createRank CreateRank", err)
-	return
 }
 
 func updateRank(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updateRank(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updateRank defer Body.Close", r.Body.Close())
 	}()
 	errchkmsg("updateRank UpdateRank", db.UpdateRank(rank))
-	return
 }
 
 func deleteRank(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteRank DeleteRank", db.DeleteRank(id))
-	return
 }

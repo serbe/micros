@@ -47,7 +47,6 @@ func createDepartment(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreateDepartment(department)
 	errchkmsg("createDepartment CreateDepartment", err)
-	return
 }
 
 func updateDepartment(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updateDepartment(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updateDepartment defer Body.Close", r.Body.Close())
 	}()
 	errchkmsg("updateDepartment UpdateDepartment", db.UpdateDepartment(department))
-	return
 }
 
 func deleteDepartment(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteDepartment DeleteDepartment", db.DeleteDepartment(id))
-	return
 }

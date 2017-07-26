@@ -47,7 +47,6 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreatePost(post)
 	errchkmsg("createPost CreatePost", err)
-	return
 }
 
 func updatePost(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updatePost defer Body.Close", r.Body.Close())
 	}()
 	errchkmsg("updatePost UpdatePost", db.UpdatePost(post))
-	return
 }
 
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deletePost DeletePost", db.DeletePost(id))
-	return
 }

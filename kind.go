@@ -47,7 +47,6 @@ func createKind(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreateKind(kind)
 	errchkmsg("createKind CreateKind", err)
-	return
 }
 
 func updateKind(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updateKind(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updateKind defer Body.Close", r.Body.Close())
 	}()
 	errchkmsg("updateKind UpdateKind", db.UpdateKind(kind))
-	return
 }
 
 func deleteKind(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteKind DeleteKind", db.DeleteKind(id))
-	return
 }

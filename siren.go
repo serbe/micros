@@ -73,7 +73,6 @@ func createSiren(w http.ResponseWriter, r *http.Request) {
 	log.Println(siren)
 	_, err := db.CreateSiren(siren)
 	errchkmsg("createSiren CreateSiren", err)
-	return
 }
 
 func updateSiren(w http.ResponseWriter, r *http.Request) {
@@ -85,11 +84,9 @@ func updateSiren(w http.ResponseWriter, r *http.Request) {
 	}()
 	log.Println(siren)
 	errchkmsg("updateSiren UpdateSiren", db.UpdateSiren(siren))
-	return
 }
 
 func deleteSiren(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteSiren DeleteSiren", db.DeleteSiren(id))
-	return
 }

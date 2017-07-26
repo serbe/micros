@@ -47,7 +47,6 @@ func createSirenType(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreateSirenType(sirenType)
 	errchkmsg("createSirenType CreateSirenType", err)
-	return
 }
 
 func updateSirenType(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updateSirenType(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updateSirenType defer Body.Close", r.Body.Close())
 	}()
 	errchkmsg("updateSirenType UpdateSirenType", db.UpdateSirenType(sirenType))
-	return
 }
 
 func deleteSirenType(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteSirenType DeleteSirenType", db.DeleteSirenType(id))
-	return
 }

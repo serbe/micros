@@ -47,7 +47,6 @@ func createScope(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err := db.CreateScope(scope)
 	errmsg("createScope CreateScope", err)
-	return
 }
 
 func updateScope(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +57,9 @@ func updateScope(w http.ResponseWriter, r *http.Request) {
 		errchkmsg("updateScope defer Body.Close", r.Body.Close())
 	}()
 	errmsg("updateScope UpdateScope", db.UpdateScope(scope))
-	return
 }
 
 func deleteScope(w http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteScope", db.DeleteScope(id))
-	return
 }
