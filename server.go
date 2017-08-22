@@ -21,7 +21,6 @@ func initServer(host string, useLog bool) {
 	}
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Recoverer)
-	// r.Use(middleware.Compress())
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(corsHandler)
 
@@ -54,10 +53,8 @@ func initServer(host string, useLog bool) {
 		})
 
 		r.Route("/api/v1/companies", func(r chi.Router) {
-			// r.With(paginate).Get("/", listCompanies)
 			r.Get("/", listCompanies)
 			r.Post("/", createCompany)
-			// r.Get("/search", SearchArticles)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", getCompany)
 				r.Put("/", updateCompany)

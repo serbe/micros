@@ -35,9 +35,9 @@ func login(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&data)
 	if err != nil {
 		errmsg("login Decode", err)
-		// render.Status(r, http.StatusInternalServerError)
-		// render.PlainText(w, r, err.Error())
-		// return
+		render.Status(r, http.StatusInternalServerError)
+		render.PlainText(w, r, err.Error())
+		return
 	}
 	defer func() {
 		errchkmsg("login defer Body.Close", r.Body.Close())

@@ -42,6 +42,7 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 		Title     string           `json:"title"`
 		Education edc.Education    `json:"education"`
 		Contacts  []edc.SelectItem `json:"contacts"`
+		Posts     []edc.SelectItem `json:"posts"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	education, err := db.GetEducation(id)
@@ -51,10 +52,15 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 	}
 	contacts, err := db.GetContactSelectAll()
 	if err != nil {
-		errmsg("lisEducationsNear GetContactSelectAll", err)
+		errmsg("getEducation GetContactSelectAll", err)
 		return
 	}
-	ctx := context{Title: "Create education", Education: education, Contacts: contacts}
+	posts, err := db.GetPostSelectAll(true)
+	if err != nil {
+		errmsg("getEducation GetPostSelectAll", err)
+		return
+	}
+	ctx := context{Title: "Create education", Education: education, Contacts: contacts, Posts: posts}
 	render.DefaultResponder(w, r, ctx)
 }
 
