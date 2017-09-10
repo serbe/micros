@@ -153,6 +153,16 @@ func initServer(host string, useLog bool) {
 				r.Delete("/", deleteSirenType)
 			})
 		})
+
+		r.Route("/api/v1/certificates", func(r chi.Router) {
+			r.Get("/", listCertificates)
+			r.Post("/", createCertificate)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", getCertificate)
+				r.Put("/", updateCertificate)
+				r.Delete("/", deleteCertificate)
+			})
+		})
 	})
 
 	err := http.ListenAndServe(host, r)
