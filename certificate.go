@@ -25,16 +25,22 @@ func listCertificates(w http.ResponseWriter, r *http.Request) {
 
 func getCertificate(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title       string          `json:"title"`
-		Certificate edc.Certificate `json:"certificate"`
+		Title       string           `json:"title"`
+		Certificate edc.Certificate  `json:"certificate"`
+		Contacts    []edc.SelectItem `json:"contacts"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	certificate, err := db.GetCertificate(id)
 	if err != nil {
 		errmsg("getCertificate GetCertificate", err)
-		return
+		// return
 	}
-	ctx := context{Title: "Create certificate", Certificate: certificate}
+	contacts, err := db.GetContactSelectAll()
+	if err != nil {
+		errmsg("getCertificate GetContactSelectAll", err)
+		// return
+	}
+	ctx := context{Title: "Create certificate", Certificate: certificate, Contacts: contacts}
 	render.DefaultResponder(w, r, ctx)
 }
 
