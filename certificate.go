@@ -28,19 +28,22 @@ func getCertificate(w http.ResponseWriter, r *http.Request) {
 		Title       string           `json:"title"`
 		Certificate edc.Certificate  `json:"certificate"`
 		Contacts    []edc.SelectItem `json:"contacts"`
+		Companies   []edc.SelectItem `json:"companies"`
 	}
 	id := toInt(chi.URLParam(r, "id"))
 	certificate, err := db.GetCertificate(id)
 	if err != nil {
 		errmsg("getCertificate GetCertificate", err)
-		// return
 	}
 	contacts, err := db.GetContactSelectAll()
 	if err != nil {
 		errmsg("getCertificate GetContactSelectAll", err)
-		// return
 	}
-	ctx := context{Title: "Create certificate", Certificate: certificate, Contacts: contacts}
+	companies, err := db.GetCompanySelectAll()
+	if err != nil {
+		errmsg("getCertificate GetCompaniesSelectAll", err)
+	}
+	ctx := context{Title: "Create certificate", Certificate: certificate, Contacts: contacts, Companies: companies}
 	render.DefaultResponder(w, r, ctx)
 }
 
