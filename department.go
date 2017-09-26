@@ -40,23 +40,17 @@ func getDepartment(w http.ResponseWriter, r *http.Request) {
 
 func createDepartment(w http.ResponseWriter, r *http.Request) {
 	var department edc.Department
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createDepartment Decode", decoder.Decode(&department))
-	defer func() {
-		errchkmsg("createDepartment defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createDepartment Decode", json.NewDecoder(r.Body).Decode(&department))
 	_, err := db.CreateDepartment(department)
 	errchkmsg("createDepartment CreateDepartment", err)
+	r.Body.Close()
 }
 
 func updateDepartment(w http.ResponseWriter, r *http.Request) {
 	var department edc.Department
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateDepartment Decode", decoder.Decode(&department))
-	defer func() {
-		errchkmsg("updateDepartment defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateDepartment Decode", json.NewDecoder(r.Body).Decode(&department))
 	errchkmsg("updateDepartment UpdateDepartment", db.UpdateDepartment(department))
+	r.Body.Close()
 }
 
 func deleteDepartment(w http.ResponseWriter, r *http.Request) {

@@ -65,25 +65,19 @@ func getSiren(w http.ResponseWriter, r *http.Request) {
 
 func createSiren(w http.ResponseWriter, r *http.Request) {
 	var siren edc.Siren
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createSiren Decode", decoder.Decode(&siren))
-	defer func() {
-		errchkmsg("createSiren defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createSiren Decode", json.NewDecoder(r.Body).Decode(&siren))
 	log.Println(siren)
 	_, err := db.CreateSiren(siren)
 	errchkmsg("createSiren CreateSiren", err)
+	r.Body.Close()
 }
 
 func updateSiren(w http.ResponseWriter, r *http.Request) {
 	var siren edc.Siren
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateSiren Decode", decoder.Decode(&siren))
-	defer func() {
-		errchkmsg("updateSiren defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateSiren Decode", json.NewDecoder(r.Body).Decode(&siren))
 	log.Println(siren)
 	errchkmsg("updateSiren UpdateSiren", db.UpdateSiren(siren))
+	r.Body.Close()
 }
 
 func deleteSiren(w http.ResponseWriter, r *http.Request) {

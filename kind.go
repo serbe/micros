@@ -40,23 +40,17 @@ func getKind(w http.ResponseWriter, r *http.Request) {
 
 func createKind(w http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createKind Decode", decoder.Decode(&kind))
-	defer func() {
-		errchkmsg("createKind defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	_, err := db.CreateKind(kind)
 	errchkmsg("createKind CreateKind", err)
+	r.Body.Close()
 }
 
 func updateKind(w http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateKind Decode", decoder.Decode(&kind))
-	defer func() {
-		errchkmsg("updateKind defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	errchkmsg("updateKind UpdateKind", db.UpdateKind(kind))
+	r.Body.Close()
 }
 
 func deleteKind(w http.ResponseWriter, r *http.Request) {

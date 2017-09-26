@@ -66,23 +66,17 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 
 func createEducation(w http.ResponseWriter, r *http.Request) {
 	var education edc.Education
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createEducation Decode", decoder.Decode(&education))
-	defer func() {
-		errchkmsg("createEducation defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	_, err := db.CreateEducation(education)
 	errchkmsg("createEducation CreateEducation", err)
+	r.Body.Close()
 }
 
 func updateEducation(w http.ResponseWriter, r *http.Request) {
 	var education edc.Education
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateEducation Decode", decoder.Decode(&education))
-	defer func() {
-		errchkmsg("updateEducation defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	errchkmsg("updateEducation UpdateEducation", db.UpdateEducation(education))
+	r.Body.Close()
 }
 
 func deleteEducation(w http.ResponseWriter, r *http.Request) {

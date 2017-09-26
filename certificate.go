@@ -49,23 +49,17 @@ func getCertificate(w http.ResponseWriter, r *http.Request) {
 
 func createCertificate(w http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createCertificate Decode", decoder.Decode(&certificate))
-	defer func() {
-		errchkmsg("createCertificate defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
 	_, err := db.CreateCertificate(certificate)
 	errchkmsg("createCertificate CreateCertificate", err)
+	r.Body.Close()
 }
 
 func updateCertificate(w http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateCertificate Decode", decoder.Decode(&certificate))
-	defer func() {
-		errchkmsg("updateCertificate defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
 	errchkmsg("updateCertificate UpdateCertificate", db.UpdateCertificate(certificate))
+	r.Body.Close()
 }
 
 func deleteCertificate(w http.ResponseWriter, r *http.Request) {

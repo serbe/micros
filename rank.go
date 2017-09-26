@@ -40,23 +40,17 @@ func getRank(w http.ResponseWriter, r *http.Request) {
 
 func createRank(w http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createRank decode", decoder.Decode(&rank))
-	defer func() {
-		errchkmsg("createRank defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	_, err := db.CreateRank(rank)
 	errchkmsg("createRank CreateRank", err)
+	r.Body.Close()
 }
 
 func updateRank(w http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateRank decode", decoder.Decode(&rank))
-	defer func() {
-		errchkmsg("updateRank defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	errchkmsg("updateRank UpdateRank", db.UpdateRank(rank))
+	r.Body.Close()
 }
 
 func deleteRank(w http.ResponseWriter, r *http.Request) {

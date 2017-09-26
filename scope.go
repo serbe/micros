@@ -40,23 +40,17 @@ func getScope(w http.ResponseWriter, r *http.Request) {
 
 func createScope(w http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createScope Decode", decoder.Decode(&scope))
-	defer func() {
-		errchkmsg("createScope defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	_, err := db.CreateScope(scope)
 	errmsg("createScope CreateScope", err)
+	r.Body.Close()
 }
 
 func updateScope(w http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateScope decoder.Decode", decoder.Decode(&scope))
-	defer func() {
-		errchkmsg("updateScope defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	errmsg("updateScope UpdateScope", db.UpdateScope(scope))
+	r.Body.Close()
 }
 
 func deleteScope(w http.ResponseWriter, r *http.Request) {

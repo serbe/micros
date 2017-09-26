@@ -46,23 +46,17 @@ func getCompany(w http.ResponseWriter, r *http.Request) {
 
 func createCompany(w http.ResponseWriter, r *http.Request) {
 	var company edc.Company
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createCompany Decode", decoder.Decode(&company))
-	defer func() {
-		errchkmsg("createCompany defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	_, err := db.CreateCompany(company)
 	errchkmsg("createCompany CreateCompany", err)
+	r.Body.Close()
 }
 
 func updateCompany(w http.ResponseWriter, r *http.Request) {
 	var company edc.Company
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateCompany Decode", decoder.Decode(&company))
-	defer func() {
-		errchkmsg("updateCompany defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	errchkmsg("updateCompany UpdateCompany", db.UpdateCompany(company))
+	r.Body.Close()
 }
 
 func deleteCompany(w http.ResponseWriter, r *http.Request) {

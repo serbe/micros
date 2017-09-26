@@ -31,17 +31,14 @@ func (l *loginData) Bind(r *http.Request) error {
 
 func login(w http.ResponseWriter, r *http.Request) {
 	var data loginData
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&data)
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		errmsg("login Decode", err)
 		render.Status(r, http.StatusInternalServerError)
 		render.PlainText(w, r, err.Error())
+		r.Body.Close()
 		return
 	}
-	defer func() {
-		errchkmsg("login defer Body.Close", r.Body.Close())
-	}()
 
 	if data.Username == "user" && data.Password == "userpass" {
 		_, tokenString, err := tokenAuth.Encode(jwtauth.Claims{
@@ -53,6 +50,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 			errmsg("login SignedString", err)
 			render.Status(r, http.StatusInternalServerError)
 			render.PlainText(w, r, err.Error())
+			r.Body.Close()
 			return
 		}
 		render.JSON(w, r, jToken{Token: tokenString, Name: data.Username, Admin: false})
@@ -60,4 +58,5 @@ func login(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusNotFound)
 		render.PlainText(w, r, "Invalid Username or Password")
 	}
+	r.Body.Close()
 }

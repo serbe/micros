@@ -40,23 +40,17 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 
 func createPost(w http.ResponseWriter, r *http.Request) {
 	var post edc.Post
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createPost Decode", decoder.Decode(&post))
-	defer func() {
-		errchkmsg("createPost defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createPost Decode", json.NewDecoder(r.Body).Decode(&post))
 	_, err := db.CreatePost(post)
 	errchkmsg("createPost CreatePost", err)
+	r.Body.Close()
 }
 
 func updatePost(w http.ResponseWriter, r *http.Request) {
 	var post edc.Post
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updatePost Decode", decoder.Decode(&post))
-	defer func() {
-		errchkmsg("updatePost defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updatePost Decode", json.NewDecoder(r.Body).Decode(&post))
 	errchkmsg("updatePost UpdatePost", db.UpdatePost(post))
+	r.Body.Close()
 }
 
 func deletePost(w http.ResponseWriter, r *http.Request) {

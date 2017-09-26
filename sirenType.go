@@ -40,23 +40,17 @@ func getSirenType(w http.ResponseWriter, r *http.Request) {
 
 func createSirenType(w http.ResponseWriter, r *http.Request) {
 	var sirenType edc.SirenType
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createSirenType Decode", decoder.Decode(&sirenType))
-	defer func() {
-		errchkmsg("createSirenType defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createSirenType Decode", json.NewDecoder(r.Body).Decode(&sirenType))
 	_, err := db.CreateSirenType(sirenType)
 	errchkmsg("createSirenType CreateSirenType", err)
+	r.Body.Close()
 }
 
 func updateSirenType(w http.ResponseWriter, r *http.Request) {
 	var sirenType edc.SirenType
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updateSirenType Decode", decoder.Decode(&sirenType))
-	defer func() {
-		errchkmsg("updateSirenType defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updateSirenType Decode", json.NewDecoder(r.Body).Decode(&sirenType))
 	errchkmsg("updateSirenType UpdateSirenType", db.UpdateSirenType(sirenType))
+	r.Body.Close()
 }
 
 func deleteSirenType(w http.ResponseWriter, r *http.Request) {

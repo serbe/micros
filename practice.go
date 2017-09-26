@@ -71,23 +71,17 @@ func getPractice(w http.ResponseWriter, r *http.Request) {
 
 func createPractice(w http.ResponseWriter, r *http.Request) {
 	var practice edc.Practice
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("createPractice Decode", decoder.Decode(&practice))
-	defer func() {
-		errchkmsg("createPractice defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("createPractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	_, err := db.CreatePractice(practice)
 	errchkmsg("createPractice CreatePractice", err)
+	r.Body.Close()
 }
 
 func updatePractice(w http.ResponseWriter, r *http.Request) {
 	var practice edc.Practice
-	decoder := json.NewDecoder(r.Body)
-	errchkmsg("updatePractice Decode", decoder.Decode(&practice))
-	defer func() {
-		errchkmsg("updatePractice defer Body.Close", r.Body.Close())
-	}()
+	errchkmsg("updatePractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	errchkmsg("updatePractice UpdatePractice", db.UpdatePractice(practice))
+	r.Body.Close()
 }
 
 func deletePractice(w http.ResponseWriter, r *http.Request) {
