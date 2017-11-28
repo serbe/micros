@@ -11,7 +11,7 @@ import (
 
 var sKey = []byte("my5up3RdYP3r53crEt")
 
-var tokenAuth *jwtauth.JwtAuth
+var tokenAuth *jwtauth.JWTAuth
 
 type loginData struct {
 	Username string `json:"username"`
