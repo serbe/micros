@@ -10,12 +10,12 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, filepath.Join("public", "index.html"))
+	http.ServeFile(w, r, filepath.Join("dist", "index.html"))
 }
 
 func serveFileHandler(w http.ResponseWriter, r *http.Request) {
 	fname := path.Base(r.URL.Path)
-	http.ServeFile(w, r, filepath.Join("public", fname))
+	http.ServeFile(w, r, filepath.Join("dist", fname))
 }
 
 func corsHandler(h http.Handler) http.Handler {
