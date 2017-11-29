@@ -27,7 +27,7 @@ func initServer(host string, useLog bool) {
 	// Frontend
 	r.Get("/", indexHandler)
 	r.Get("/favicon.ico", serveFileHandler)
-	FileServer(r, "/static", http.Dir(filepath.Join("public", "static")))
+	FileServer(r, "/static", http.Dir(filepath.Join("dist", "static")))
 	r.NotFound(indexHandler)
 
 	// Auth
