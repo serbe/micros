@@ -38,7 +38,7 @@ func getScope(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createScope(w http.ResponseWriter, r *http.Request) {
+func createScope(_ http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
 	errchkmsg("createScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	_, err := db.CreateScope(scope)
@@ -46,14 +46,14 @@ func createScope(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateScope(w http.ResponseWriter, r *http.Request) {
+func updateScope(_ http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
 	errchkmsg("updateScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	errmsg("updateScope UpdateScope", db.UpdateScope(scope))
 	r.Body.Close()
 }
 
-func deleteScope(w http.ResponseWriter, r *http.Request) {
+func deleteScope(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteScope", db.DeleteScope(id))
 }

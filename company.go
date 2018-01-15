@@ -44,7 +44,7 @@ func getCompany(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createCompany(w http.ResponseWriter, r *http.Request) {
+func createCompany(_ http.ResponseWriter, r *http.Request) {
 	var company edc.Company
 	errchkmsg("createCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	_, err := db.CreateCompany(company)
@@ -52,14 +52,14 @@ func createCompany(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateCompany(w http.ResponseWriter, r *http.Request) {
+func updateCompany(_ http.ResponseWriter, r *http.Request) {
 	var company edc.Company
 	errchkmsg("updateCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	errchkmsg("updateCompany UpdateCompany", db.UpdateCompany(company))
 	r.Body.Close()
 }
 
-func deleteCompany(w http.ResponseWriter, r *http.Request) {
+func deleteCompany(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteCompany DeleteCompany", db.DeleteCompany(id))
 }

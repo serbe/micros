@@ -76,7 +76,7 @@ func getContact(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createContact(w http.ResponseWriter, r *http.Request) {
+func createContact(_ http.ResponseWriter, r *http.Request) {
 	var contact edc.Contact
 	errchkmsg("createContact Decode", json.NewDecoder(r.Body).Decode(&contact))
 	_, err := db.CreateContact(contact)
@@ -84,14 +84,14 @@ func createContact(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateContact(w http.ResponseWriter, r *http.Request) {
+func updateContact(_ http.ResponseWriter, r *http.Request) {
 	var contact edc.Contact
 	errchkmsg("updateContact Decode", json.NewDecoder(r.Body).Decode(&contact))
 	errchkmsg("updateContact UpdateContact", db.UpdateContact(contact))
 	r.Body.Close()
 }
 
-func deleteContact(w http.ResponseWriter, r *http.Request) {
+func deleteContact(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteContact DeleteContact", db.DeleteContact(id))
 }

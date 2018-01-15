@@ -64,7 +64,7 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createEducation(w http.ResponseWriter, r *http.Request) {
+func createEducation(_ http.ResponseWriter, r *http.Request) {
 	var education edc.Education
 	errchkmsg("createEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	_, err := db.CreateEducation(education)
@@ -72,14 +72,14 @@ func createEducation(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateEducation(w http.ResponseWriter, r *http.Request) {
+func updateEducation(_ http.ResponseWriter, r *http.Request) {
 	var education edc.Education
 	errchkmsg("updateEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	errchkmsg("updateEducation UpdateEducation", db.UpdateEducation(education))
 	r.Body.Close()
 }
 
-func deleteEducation(w http.ResponseWriter, r *http.Request) {
+func deleteEducation(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteEducation DeleteEducation", db.DeleteEducation(id))
 }

@@ -38,7 +38,7 @@ func getSirenType(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createSirenType(w http.ResponseWriter, r *http.Request) {
+func createSirenType(_ http.ResponseWriter, r *http.Request) {
 	var sirenType edc.SirenType
 	errchkmsg("createSirenType Decode", json.NewDecoder(r.Body).Decode(&sirenType))
 	_, err := db.CreateSirenType(sirenType)
@@ -46,14 +46,14 @@ func createSirenType(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateSirenType(w http.ResponseWriter, r *http.Request) {
+func updateSirenType(_ http.ResponseWriter, r *http.Request) {
 	var sirenType edc.SirenType
 	errchkmsg("updateSirenType Decode", json.NewDecoder(r.Body).Decode(&sirenType))
 	errchkmsg("updateSirenType UpdateSirenType", db.UpdateSirenType(sirenType))
 	r.Body.Close()
 }
 
-func deleteSirenType(w http.ResponseWriter, r *http.Request) {
+func deleteSirenType(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteSirenType DeleteSirenType", db.DeleteSirenType(id))
 }

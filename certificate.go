@@ -47,7 +47,7 @@ func getCertificate(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createCertificate(w http.ResponseWriter, r *http.Request) {
+func createCertificate(_ http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
 	errchkmsg("createCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
 	_, err := db.CreateCertificate(certificate)
@@ -55,14 +55,14 @@ func createCertificate(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateCertificate(w http.ResponseWriter, r *http.Request) {
+func updateCertificate(_ http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
 	errchkmsg("updateCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
 	errchkmsg("updateCertificate UpdateCertificate", db.UpdateCertificate(certificate))
 	r.Body.Close()
 }
 
-func deleteCertificate(w http.ResponseWriter, r *http.Request) {
+func deleteCertificate(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteCertificate DeleteCertificate", db.DeleteCertificate(id))
 }

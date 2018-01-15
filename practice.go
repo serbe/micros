@@ -69,7 +69,7 @@ func getPractice(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createPractice(w http.ResponseWriter, r *http.Request) {
+func createPractice(_ http.ResponseWriter, r *http.Request) {
 	var practice edc.Practice
 	errchkmsg("createPractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	_, err := db.CreatePractice(practice)
@@ -77,14 +77,14 @@ func createPractice(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updatePractice(w http.ResponseWriter, r *http.Request) {
+func updatePractice(_ http.ResponseWriter, r *http.Request) {
 	var practice edc.Practice
 	errchkmsg("updatePractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	errchkmsg("updatePractice UpdatePractice", db.UpdatePractice(practice))
 	r.Body.Close()
 }
 
-func deletePractice(w http.ResponseWriter, r *http.Request) {
+func deletePractice(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deletePractice DeletePractice", db.DeletePractice(id))
 }

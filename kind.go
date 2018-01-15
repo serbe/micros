@@ -38,7 +38,7 @@ func getKind(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createKind(w http.ResponseWriter, r *http.Request) {
+func createKind(_ http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
 	errchkmsg("createKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	_, err := db.CreateKind(kind)
@@ -46,14 +46,14 @@ func createKind(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateKind(w http.ResponseWriter, r *http.Request) {
+func updateKind(_ http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
 	errchkmsg("updateKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	errchkmsg("updateKind UpdateKind", db.UpdateKind(kind))
 	r.Body.Close()
 }
 
-func deleteKind(w http.ResponseWriter, r *http.Request) {
+func deleteKind(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteKind DeleteKind", db.DeleteKind(id))
 }

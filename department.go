@@ -38,7 +38,7 @@ func getDepartment(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createDepartment(w http.ResponseWriter, r *http.Request) {
+func createDepartment(_ http.ResponseWriter, r *http.Request) {
 	var department edc.Department
 	errchkmsg("createDepartment Decode", json.NewDecoder(r.Body).Decode(&department))
 	_, err := db.CreateDepartment(department)
@@ -46,14 +46,14 @@ func createDepartment(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateDepartment(w http.ResponseWriter, r *http.Request) {
+func updateDepartment(_ http.ResponseWriter, r *http.Request) {
 	var department edc.Department
 	errchkmsg("updateDepartment Decode", json.NewDecoder(r.Body).Decode(&department))
 	errchkmsg("updateDepartment UpdateDepartment", db.UpdateDepartment(department))
 	r.Body.Close()
 }
 
-func deleteDepartment(w http.ResponseWriter, r *http.Request) {
+func deleteDepartment(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteDepartment DeleteDepartment", db.DeleteDepartment(id))
 }

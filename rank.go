@@ -38,7 +38,7 @@ func getRank(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createRank(w http.ResponseWriter, r *http.Request) {
+func createRank(_ http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
 	errchkmsg("createRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	_, err := db.CreateRank(rank)
@@ -46,14 +46,14 @@ func createRank(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateRank(w http.ResponseWriter, r *http.Request) {
+func updateRank(_ http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
 	errchkmsg("updateRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	errchkmsg("updateRank UpdateRank", db.UpdateRank(rank))
 	r.Body.Close()
 }
 
-func deleteRank(w http.ResponseWriter, r *http.Request) {
+func deleteRank(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteRank DeleteRank", db.DeleteRank(id))
 }

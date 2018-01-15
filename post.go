@@ -38,7 +38,7 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createPost(w http.ResponseWriter, r *http.Request) {
+func createPost(_ http.ResponseWriter, r *http.Request) {
 	var post edc.Post
 	errchkmsg("createPost Decode", json.NewDecoder(r.Body).Decode(&post))
 	_, err := db.CreatePost(post)
@@ -46,14 +46,14 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updatePost(w http.ResponseWriter, r *http.Request) {
+func updatePost(_ http.ResponseWriter, r *http.Request) {
 	var post edc.Post
 	errchkmsg("updatePost Decode", json.NewDecoder(r.Body).Decode(&post))
 	errchkmsg("updatePost UpdatePost", db.UpdatePost(post))
 	r.Body.Close()
 }
 
-func deletePost(w http.ResponseWriter, r *http.Request) {
+func deletePost(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deletePost DeletePost", db.DeletePost(id))
 }

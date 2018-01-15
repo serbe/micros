@@ -63,7 +63,7 @@ func getSiren(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, ctx)
 }
 
-func createSiren(w http.ResponseWriter, r *http.Request) {
+func createSiren(_ http.ResponseWriter, r *http.Request) {
 	var siren edc.Siren
 	errchkmsg("createSiren Decode", json.NewDecoder(r.Body).Decode(&siren))
 	log.Println(siren)
@@ -72,7 +72,7 @@ func createSiren(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func updateSiren(w http.ResponseWriter, r *http.Request) {
+func updateSiren(_ http.ResponseWriter, r *http.Request) {
 	var siren edc.Siren
 	errchkmsg("updateSiren Decode", json.NewDecoder(r.Body).Decode(&siren))
 	log.Println(siren)
@@ -80,7 +80,7 @@ func updateSiren(w http.ResponseWriter, r *http.Request) {
 	r.Body.Close()
 }
 
-func deleteSiren(w http.ResponseWriter, r *http.Request) {
+func deleteSiren(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
 	errchkmsg("deleteSiren DeleteSiren", db.DeleteSiren(id))
 }
