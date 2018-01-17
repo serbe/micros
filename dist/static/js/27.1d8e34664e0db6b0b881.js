@@ -1,2 +1,0 @@
-webpackJsonp([27],{zOUs:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r={},l=function(){var e=this,t=e.$createElement,n=e._self._c||t;return n("div",[n("h1",[e._v("404 page not found")]),e._v(" "),n("router-link",{attrs:{to:"/"}},[e._v("Home")])],1)},u=[],o={render:l,staticRenderFns:u},s=o,a=n("VU/8"),c=a(r,s,!1,null,null,null);t.default=c.exports}});
-//# sourceMappingURL=27.1d8e34664e0db6b0b881.js.map
