@@ -29,6 +29,7 @@ type Config struct {
 		Host string `json:"host"`
 		Port string `json:"port"`
 		Log  bool   `json:"log"`
+		Auth bool   `json:"auth"`
 	} `json:"web"`
 }
 

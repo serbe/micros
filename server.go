@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func initServer(host string, useLog bool) {
+func initServer(host string, useLog bool, useAuth bool) {
 	tokenAuth = jwtauth.New("HS256", sKey, nil)
 
 	r := chi.NewRouter()
@@ -37,8 +37,10 @@ func initServer(host string, useLog bool) {
 
 	// REST API
 	r.Group(func(r chi.Router) {
-		r.Use(jwtauth.Verifier(tokenAuth))
-		r.Use(jwtauth.Authenticator)
+		if useAuth {
+			r.Use(jwtauth.Verifier(tokenAuth))
+			r.Use(jwtauth.Authenticator)
+		}
 
 		r.Use(render.SetContentType(render.ContentTypeJSON))
 
