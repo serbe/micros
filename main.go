@@ -11,6 +11,7 @@ func main() {
 	}
 	db, err = edc.InitDB(
 		cfg.Base.Host,
+		cfg.Base.Port,
 		cfg.Base.Dbname,
 		cfg.Base.User,
 		cfg.Base.Password,
