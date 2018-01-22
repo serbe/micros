@@ -32,7 +32,7 @@ func initServer(host string, useLog bool, useAuth bool) {
 
 	// Auth
 	r.Group(func(r chi.Router) {
-		r.Post("/login", login)
+		r.Post("/api/v1/login", login)
 	})
 
 	// REST API
