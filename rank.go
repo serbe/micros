@@ -43,14 +43,14 @@ func createRank(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	_, err := db.CreateRank(rank)
 	errchkmsg("createRank CreateRank", err)
-	r.Body.Close()
+	errchkmsg("createRank CloseBody", r.Body.Close())
 }
 
 func updateRank(_ http.ResponseWriter, r *http.Request) {
 	var rank edc.Rank
 	errchkmsg("updateRank decode", json.NewDecoder(r.Body).Decode(&rank))
 	errchkmsg("updateRank UpdateRank", db.UpdateRank(rank))
-	r.Body.Close()
+	errchkmsg("updateRank CloseBody", r.Body.Close())
 }
 
 func deleteRank(_ http.ResponseWriter, r *http.Request) {

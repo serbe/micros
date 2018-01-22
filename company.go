@@ -49,14 +49,14 @@ func createCompany(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	_, err := db.CreateCompany(company)
 	errchkmsg("createCompany CreateCompany", err)
-	r.Body.Close()
+	errchkmsg("createCompany CloseBody", r.Body.Close())
 }
 
 func updateCompany(_ http.ResponseWriter, r *http.Request) {
 	var company edc.Company
 	errchkmsg("updateCompany Decode", json.NewDecoder(r.Body).Decode(&company))
 	errchkmsg("updateCompany UpdateCompany", db.UpdateCompany(company))
-	r.Body.Close()
+	errchkmsg("updateCompany CloseBody", r.Body.Close())
 }
 
 func deleteCompany(_ http.ResponseWriter, r *http.Request) {

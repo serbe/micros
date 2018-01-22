@@ -81,14 +81,14 @@ func createContact(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createContact Decode", json.NewDecoder(r.Body).Decode(&contact))
 	_, err := db.CreateContact(contact)
 	errchkmsg("createContact CreateContact", err)
-	r.Body.Close()
+	errchkmsg("createContact CloseBody", r.Body.Close())
 }
 
 func updateContact(_ http.ResponseWriter, r *http.Request) {
 	var contact edc.Contact
 	errchkmsg("updateContact Decode", json.NewDecoder(r.Body).Decode(&contact))
 	errchkmsg("updateContact UpdateContact", db.UpdateContact(contact))
-	r.Body.Close()
+	errchkmsg("updateContact CloseBody", r.Body.Close())
 }
 
 func deleteContact(_ http.ResponseWriter, r *http.Request) {

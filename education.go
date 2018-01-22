@@ -60,7 +60,12 @@ func getEducation(w http.ResponseWriter, r *http.Request) {
 		errmsg("getEducation GetPostSelectAll", err)
 		return
 	}
-	ctx := context{Title: "Create education", Education: education, Contacts: contacts, Posts: posts}
+	ctx := context{
+		Title:     "Create education",
+		Education: education,
+		Contacts:  contacts,
+		Posts:     posts,
+	}
 	render.DefaultResponder(w, r, ctx)
 }
 
@@ -69,14 +74,14 @@ func createEducation(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	_, err := db.CreateEducation(education)
 	errchkmsg("createEducation CreateEducation", err)
-	r.Body.Close()
+	errchkmsg("createEducation CloseBody", r.Body.Close())
 }
 
 func updateEducation(_ http.ResponseWriter, r *http.Request) {
 	var education edc.Education
 	errchkmsg("updateEducation Decode", json.NewDecoder(r.Body).Decode(&education))
 	errchkmsg("updateEducation UpdateEducation", db.UpdateEducation(education))
-	r.Body.Close()
+	errchkmsg("updateEducation CloseBody", r.Body.Close())
 }
 
 func deleteEducation(_ http.ResponseWriter, r *http.Request) {

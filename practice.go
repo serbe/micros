@@ -74,14 +74,14 @@ func createPractice(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createPractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	_, err := db.CreatePractice(practice)
 	errchkmsg("createPractice CreatePractice", err)
-	r.Body.Close()
+	errchkmsg("createPractice CloseBody", r.Body.Close())
 }
 
 func updatePractice(_ http.ResponseWriter, r *http.Request) {
 	var practice edc.Practice
 	errchkmsg("updatePractice Decode", json.NewDecoder(r.Body).Decode(&practice))
 	errchkmsg("updatePractice UpdatePractice", db.UpdatePractice(practice))
-	r.Body.Close()
+	errchkmsg("updatePractice CloseBody", r.Body.Close())
 }
 
 func deletePractice(_ http.ResponseWriter, r *http.Request) {

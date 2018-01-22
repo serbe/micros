@@ -43,26 +43,43 @@ func getCertificate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errmsg("getCertificate GetCompaniesSelectAll", err)
 	}
-	ctx := context{Title: "Create certificate", Certificate: certificate, Contacts: contacts, Companies: companies}
+	ctx := context{
+		Title:       "Create certificate",
+		Certificate: certificate,
+		Contacts:    contacts,
+		Companies:   companies,
+	}
 	render.DefaultResponder(w, r, ctx)
 }
 
 func createCertificate(_ http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
-	errchkmsg("createCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
+	errchkmsg(
+		"createCertificate Decode",
+		json.NewDecoder(r.Body).Decode(&certificate),
+	)
 	_, err := db.CreateCertificate(certificate)
 	errchkmsg("createCertificate CreateCertificate", err)
-	r.Body.Close()
+	errchkmsg("createCertificate CloseBody", r.Body.Close())
 }
 
 func updateCertificate(_ http.ResponseWriter, r *http.Request) {
 	var certificate edc.Certificate
-	errchkmsg("updateCertificate Decode", json.NewDecoder(r.Body).Decode(&certificate))
-	errchkmsg("updateCertificate UpdateCertificate", db.UpdateCertificate(certificate))
-	r.Body.Close()
+	errchkmsg(
+		"updateCertificate Decode",
+		json.NewDecoder(r.Body).Decode(&certificate),
+	)
+	errchkmsg(
+		"updateCertificate UpdateCertificate",
+		db.UpdateCertificate(certificate),
+	)
+	errchkmsg("updateCertificate CloseBody", r.Body.Close())
 }
 
 func deleteCertificate(_ http.ResponseWriter, r *http.Request) {
 	id := toInt(chi.URLParam(r, "id"))
-	errchkmsg("deleteCertificate DeleteCertificate", db.DeleteCertificate(id))
+	errchkmsg(
+		"deleteCertificate DeleteCertificate",
+		db.DeleteCertificate(id),
+	)
 }

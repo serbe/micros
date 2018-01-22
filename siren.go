@@ -69,7 +69,7 @@ func createSiren(_ http.ResponseWriter, r *http.Request) {
 	log.Println(siren)
 	_, err := db.CreateSiren(siren)
 	errchkmsg("createSiren CreateSiren", err)
-	r.Body.Close()
+	errchkmsg("createSiren CloseBody", r.Body.Close())
 }
 
 func updateSiren(_ http.ResponseWriter, r *http.Request) {
@@ -77,7 +77,7 @@ func updateSiren(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("updateSiren Decode", json.NewDecoder(r.Body).Decode(&siren))
 	log.Println(siren)
 	errchkmsg("updateSiren UpdateSiren", db.UpdateSiren(siren))
-	r.Body.Close()
+	errchkmsg("updateSiren CloseBody", r.Body.Close())
 }
 
 func deleteSiren(_ http.ResponseWriter, r *http.Request) {

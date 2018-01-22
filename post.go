@@ -43,14 +43,14 @@ func createPost(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createPost Decode", json.NewDecoder(r.Body).Decode(&post))
 	_, err := db.CreatePost(post)
 	errchkmsg("createPost CreatePost", err)
-	r.Body.Close()
+	errchkmsg("createPost CloseBody", r.Body.Close())
 }
 
 func updatePost(_ http.ResponseWriter, r *http.Request) {
 	var post edc.Post
 	errchkmsg("updatePost Decode", json.NewDecoder(r.Body).Decode(&post))
 	errchkmsg("updatePost UpdatePost", db.UpdatePost(post))
-	r.Body.Close()
+	errchkmsg("updatePost CloseBody", r.Body.Close())
 }
 
 func deletePost(_ http.ResponseWriter, r *http.Request) {

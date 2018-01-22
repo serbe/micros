@@ -36,7 +36,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		errmsg("login Decode", err)
 		render.Status(r, http.StatusInternalServerError)
 		render.PlainText(w, r, err.Error())
-		r.Body.Close()
+		errchkmsg("login CloseBody", r.Body.Close())
 		return
 	}
 
@@ -50,13 +50,17 @@ func login(w http.ResponseWriter, r *http.Request) {
 			errmsg("login SignedString", err)
 			render.Status(r, http.StatusInternalServerError)
 			render.PlainText(w, r, err.Error())
-			r.Body.Close()
+			errchkmsg("login CloseBody", r.Body.Close())
 			return
 		}
-		render.JSON(w, r, jToken{Token: tokenString, Name: data.Username, Admin: false})
+		render.JSON(w, r, jToken{
+			Token: tokenString,
+			Name:  data.Username,
+			Admin: false,
+		})
 	} else {
 		render.Status(r, http.StatusNotFound)
 		render.PlainText(w, r, "Invalid Username or Password")
 	}
-	r.Body.Close()
+	errchkmsg("login CloseBody", r.Body.Close())
 }

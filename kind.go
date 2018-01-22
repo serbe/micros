@@ -43,14 +43,14 @@ func createKind(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	_, err := db.CreateKind(kind)
 	errchkmsg("createKind CreateKind", err)
-	r.Body.Close()
+	errchkmsg("createKind CloseBody", r.Body.Close())
 }
 
 func updateKind(_ http.ResponseWriter, r *http.Request) {
 	var kind edc.Kind
 	errchkmsg("updateKind Decode", json.NewDecoder(r.Body).Decode(&kind))
 	errchkmsg("updateKind UpdateKind", db.UpdateKind(kind))
-	r.Body.Close()
+	errchkmsg("updateKind CloseBody", r.Body.Close())
 }
 
 func deleteKind(_ http.ResponseWriter, r *http.Request) {

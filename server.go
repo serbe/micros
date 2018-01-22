@@ -23,12 +23,6 @@ func initServer(host string, useLog bool, useAuth bool) {
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(corsHandler)
 
-	// Frontend
-	// r.Get("/", indexHandler)
-	// r.Get("/favicon.ico", serveFileHandler)
-	// FileServer(r, "/static", http.Dir(filepath.Join("dist", "static")))
-	// r.NotFound(indexHandler)
-
 	// Auth
 	r.Group(func(r chi.Router) {
 		r.Post("/edds/api/login", login)

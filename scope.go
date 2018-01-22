@@ -43,14 +43,14 @@ func createScope(_ http.ResponseWriter, r *http.Request) {
 	errchkmsg("createScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	_, err := db.CreateScope(scope)
 	errmsg("createScope CreateScope", err)
-	r.Body.Close()
+	errchkmsg("createScope CloseBody", r.Body.Close())
 }
 
 func updateScope(_ http.ResponseWriter, r *http.Request) {
 	var scope edc.Scope
 	errchkmsg("updateScope Decode", json.NewDecoder(r.Body).Decode(&scope))
 	errmsg("updateScope UpdateScope", db.UpdateScope(scope))
-	r.Body.Close()
+	errchkmsg("updateScope CloseBody", r.Body.Close())
 }
 
 func deleteScope(_ http.ResponseWriter, r *http.Request) {
