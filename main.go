@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/serbe/edc"
-)
+import "github.com/serbe/edc"
 
 func main() {
 	cfg, err := getConfig()
