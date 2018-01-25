@@ -25,7 +25,7 @@ func initServer(host string, useLog bool, useAuth bool) {
 
 	// Auth
 	r.Group(func(r chi.Router) {
-		r.Post("/edds/api/auth/login", login)
+		r.Post("/edds/api/login", login)
 	})
 
 	// REST API
