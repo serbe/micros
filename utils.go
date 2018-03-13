@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	db        *edc.Edb
 	logErrors bool
+	cors string
+	db *edc.Edb
 )
 
 // Config all vars
@@ -29,6 +30,7 @@ type Config struct {
 	Web struct {
 		Log  bool   `json:"log"`
 		Auth bool   `json:"auth"`
+		CORS string `json:"cors"`
 		Host string `json:"host"`
 		Port string `json:"port"`
 	} `json:"web"`
@@ -51,6 +53,7 @@ func getConfig() (Config, error) {
 		errmsg("getConfig", err)
 		return c, err
 	}
+	cors = c.Web.CORS
 	return c, err
 }
 
