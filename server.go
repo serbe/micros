@@ -21,7 +21,9 @@ func initServer(host string, useLog bool, useAuth bool) {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
-	r.Use(corsHandler)
+	if cors {
+		r.Use(corsHandler)
+	}
 
 	// Auth
 	r.Group(func(r chi.Router) {
