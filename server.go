@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-func initServer(host string, useLog bool, useAuth bool) {
+func initServer(host string, useLog, useAuth bool) {
 	tokenAuth = jwtauth.New("HS256", sKey, nil)
 
 	r := chi.NewRouter()
