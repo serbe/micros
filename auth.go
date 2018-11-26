@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 )
@@ -41,7 +42,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Username == "user" && data.Password == "userpass" {
-		_, tokenString, err := tokenAuth.Encode(jwtauth.Claims{
+		_, tokenString, err := tokenAuth.Encode(jwt.MapClaims{
 			"admin": false,
 			"name":  data.Username,
 			"exp":   time.Now().Add(time.Hour * 24).Unix(),
