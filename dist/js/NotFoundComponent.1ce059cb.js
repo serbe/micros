@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["NotFoundComponent"],{2946:function(n,o,t){"use strict";t.r(o);var e=function(){var n=this,o=n.$createElement,t=n._self._c||o;return t("div",[t("h1",[n._v("404 page not found")]),t("router-link",{attrs:{to:"/"}},[n._v("Home")])],1)},u=[],l={},r=l,i=t("2877"),p=Object(i["a"])(r,e,u,!1,null,null,null);p.options.__file="NotFoundComponent.vue";o["default"]=p.exports}}]);
-//# sourceMappingURL=NotFoundComponent.1ce059cb.js.map
