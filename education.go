@@ -25,8 +25,8 @@ func listEducations(w http.ResponseWriter, r *http.Request) {
 
 func listEducationsNear(w http.ResponseWriter, r *http.Request) {
 	type context struct {
-		Title      string              `json:"title"`
-		Educations []edc.EducationList `json:"educations"`
+		Title      string               `json:"title"`
+		Educations []edc.EducationShort `json:"educations"`
 	}
 	educations, err := db.GetEducationNear()
 	if err != nil {
